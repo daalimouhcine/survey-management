@@ -1,5 +1,7 @@
 import SurveyRow from "./SurveyRow";
 import { Survey } from "../types";
+import CreateSurvey from "./CreateSurvey";
+import { useState } from "react";
 
 const surveys: Survey[] = [
   {
@@ -38,8 +40,23 @@ const surveys: Survey[] = [
       },
     ],
   },
+  {
+    SurveyId: 1235,
+    SurveyName: "test for nothing",
+    startDate: "2023-01-10T06:14:00Z",
+    endDate: "2023-02-10T06:14:00Z",
+    description: "This is a short survey to identify your overall satisfaction",
+    introPrompt:
+      "You will hear 3 short questions related to the service we provide for you. Please answer each question by speaking the corresponding number into your telephone.",
+    outroPrompt:
+      "Thank you very much for participating. Have a nice day. Good Bye!",
+    surveyActive: true,
+    CreatedBy: "Anna Rodriques",
+    questions: [],
+  },
 ];
 const SurveyTable = () => {
+  const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
   return (
     <div className='px-4 sm:px-6 lg:px-8 mt-10'>
       <div className='sm:flex sm:items-center'>
@@ -51,10 +68,46 @@ const SurveyTable = () => {
           </p>
         </div>
         <div className='mt-4 sm:mt-0 sm:ml-16 sm:flex-none'>
+          <CreateSurvey
+            isOpen={createSurveyOpen}
+            setOpen={() => setCreateSurveyOpen(false)}
+          />
           <button
+            onClick={() => setCreateSurveyOpen(true)}
             type='button'
-            className='inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto'>
-            Add survey
+            className='relative inline-flex items-center justify-start py-3 pl-4 pr-12 overflow-hidden font-semibold text-indigo-600 transition-all duration-150 ease-in-out rounded hover:pl-10 hover:pr-6 bg-gray-100 group'>
+            <span className='absolute bottom-0 left-0 w-full h-1 transition-all duration-150 ease-in-out bg-indigo-600 group-hover:h-full'></span>
+            <span className='absolute right-0 pr-4 duration-200 ease-out group-hover:translate-x-12'>
+              <svg
+                className='w-5 h-5 text-green-400'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+                xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M14 5l7 7m0 0l-7 7m7-7H3'></path>
+              </svg>
+            </span>
+            <span className='absolute left-0 pl-2.5 -translate-x-12 group-hover:translate-x-0 ease-out duration-200'>
+              <svg
+                className='w-5 h-5 text-green-400'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+                xmlns='http://www.w3.org/2000/svg'>
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M14 5l7 7m0 0l-7 7m7-7H3'></path>
+              </svg>
+            </span>
+            <span className='relative w-full text-left transition-colors duration-200 ease-in-out group-hover:text-white'>
+              Add Survey
+            </span>
           </button>
         </div>
       </div>
@@ -113,13 +166,23 @@ const SurveyTable = () => {
                   </tr>
                 </thead>
                 <tbody className='bg-white'>
-                  {surveys.map((survey, index) => (
-                    <SurveyRow
-                      key={survey.SurveyId}
-                      index={index}
-                      survey={survey}
-                    />
-                  ))}
+                  {surveys.length > 0 ? (
+                    surveys.map((survey, index) => (
+                      <SurveyRow
+                        key={survey.SurveyId}
+                        index={index}
+                        survey={survey}
+                      />
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={9}
+                        className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center'>
+                        No Surveys Found
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
