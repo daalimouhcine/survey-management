@@ -1,7 +1,7 @@
-import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import { Survey } from "../types";
 import { useState } from "react";
 import ListQuestionTable from "./ListQuestionTable";
+import SurveyActions from "./SurveyActions";
 
 const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
   const [openQuestions, setOpenQuestions] = useState(false);
@@ -15,7 +15,7 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
         surveyTitle={survey.SurveyName}
       />
       <tr
-        className={`hover:bg-gray-100 ${
+        className={`hover:bg-gray-100 cursor-pointer ${
           index % 2 === 0 ? undefined : "bg-gray-50"
         }`}>
         <td
@@ -67,9 +67,7 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
           )}
         </td>
         <td className='relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6'>
-          <button className='p-1 bg-gray-300 rounded-md hover:bg-gray-200 transition-colors ease-linear duration-200'>
-            <EllipsisVerticalIcon className='w-5 h-5 text-gray-800' />
-          </button>
+          <SurveyActions survey={survey} />
         </td>
       </tr>
     </>
