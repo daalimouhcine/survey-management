@@ -8,7 +8,13 @@ import {
 import { Survey } from "../types";
 import { useClickOutside } from "../hooks/useClickOutside";
 
-const SurveyActions = ({ survey }: { survey: Survey }) => {
+const SurveyActions = ({
+  survey,
+  viewDetails,
+}: {
+  survey: Survey;
+  viewDetails: any;
+}) => {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => {
     setOpen(false);
@@ -24,7 +30,12 @@ const SurveyActions = ({ survey }: { survey: Survey }) => {
         className={`w-fit flex flex-col absolute right-0 -translate-x-1/2 top-0 -translate-y-full mt-8 bg-white rounded-md overflow-hidden shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${
           open ? "" : "hidden"
         }`}>
-        <button className='w-full items-center justify-center flex px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
+        <button
+          onClick={() => {
+            setOpen(false);
+            viewDetails();
+          }}
+          className='w-full items-center justify-center flex px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
           <span>Details</span>
           <EyeIcon className='w-4 h-4 ml-2 inline-block text-green-400' />
         </button>

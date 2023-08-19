@@ -1,6 +1,6 @@
 import { Survey } from "../types";
 import { useState } from "react";
-import ListQuestionTable from "./ListQuestionTable";
+import SurveyDetails from "./SurveyDetails";
 import SurveyActions from "./SurveyActions";
 
 const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
@@ -8,7 +8,7 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
 
   return (
     <>
-      <ListQuestionTable
+      <SurveyDetails
         survey={survey}
         isOpen={openQuestions}
         setOpen={() => setOpenQuestions(!openQuestions)}
@@ -31,12 +31,12 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
         <td
           onClick={() => setOpenQuestions(true)}
           className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-          {survey.startDate.split("T")[0]}
+          {new Date(survey.startDate).toLocaleString()}
         </td>
         <td
           onClick={() => setOpenQuestions(true)}
           className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-          {survey.endDate.split("T")[0]}
+          {new Date(survey.endDate).toLocaleString()}
         </td>
         <td
           onClick={() => setOpenQuestions(true)}
@@ -67,7 +67,10 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
           )}
         </td>
         <td className='relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6'>
-          <SurveyActions survey={survey} />
+          <SurveyActions
+            survey={survey}
+            viewDetails={() => setOpenQuestions(true)}
+          />
         </td>
       </tr>
     </>
