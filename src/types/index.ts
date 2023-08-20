@@ -19,3 +19,18 @@ export type Survey = {
   CreatedBy: string;
   questions: Question[];
 };
+
+export type createSurveyForm = {
+  title: string;
+  startDate: string;
+  endDate: string;
+  introPrompt: string;
+  outroPrompt: string;
+  description: string;
+};
+
+export type createQuestionForm = {
+  questionText: string;
+  min: number;
+  max: number;
+};
