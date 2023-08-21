@@ -7,6 +7,7 @@ import {
 } from "../types";
 import { useState } from "react";
 import { TrashIcon } from "@heroicons/react/20/solid";
+import Swal from "sweetalert2";
 
 const CreateSurvey = ({
   isOpen,
@@ -49,7 +50,7 @@ const CreateSurvey = ({
       questions: [...questions],
     };
     alert(JSON.stringify(newSurvey));
-    cancel();
+    cancel(false);
   };
   const onSubmitQuestion = (data: createQuestionForm) => {
     const newQuestion: Question = {
@@ -73,11 +74,40 @@ const CreateSurvey = ({
     );
   };
 
-  const cancel = () => {
-    resetSurvey();
-    resetQuestion();
-    setQuestions([]);
-    setOpen(false);
+  const cancel = (validation: boolean) => {
+    if (
+      validation &&
+      (questions.length > 0 ||
+        watchSurvey("surveyName") ||
+        watchSurvey("startDate") ||
+        watchSurvey("endDate") ||
+        watchSurvey("introPrompt") ||
+        watchSurvey("outroPrompt") ||
+        watchSurvey("description"))
+    ) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Cancel!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          resetSurvey();
+          resetQuestion();
+          setQuestions([]);
+          setOpen(false);
+          Swal.fire("Canceled!", "Your operation has been canceled.", "success");
+        }
+      });
+    } else {
+      resetSurvey();
+      resetQuestion();
+      setQuestions([]);
+      setOpen(false);
+    }
   };
 
   const validateDate = (date: string, type: string) => {
@@ -162,7 +192,7 @@ const CreateSurvey = ({
             </button>
             <button
               type='button'
-              onClick={() => cancel()}
+              onClick={() => cancel(true)}
               className='relative px-5 py-2.5 overflow-hidden font-medium text-red-500 bg-gray-100 border border-gray-100 rounded-lg shadow-inner group'>
               <span className='absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-red-400 group-hover:w-full ease'></span>
               <span className='absolute bottom-0 right-0 w-0 h-0 transition-all duration-200 border-b-2 border-red-400 group-hover:w-full ease'></span>

@@ -7,6 +7,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { Survey } from "../types";
 import { useClickOutside } from "../hooks/useClickOutside";
+import Swal from "sweetalert2";
 
 const SurveyActions = ({
   survey,
@@ -19,6 +20,23 @@ const SurveyActions = ({
   const ref = useClickOutside(() => {
     setOpen(false);
   });
+
+  const removeSurvey = (surveyId: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire("Deleted!", "Your Survey has been deleted.", "success");
+      }
+    });
+  };
+
   return (
     <div ref={open ? ref : undefined} className='relative'>
       <button
@@ -43,7 +61,12 @@ const SurveyActions = ({
           <span>Edit</span>
           <PencilSquareIcon className='w-4 h-4 ml-2 inline-block text-blue-400' />
         </button>
-        <button className='w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
+        <button
+          onClick={() => {
+            setOpen(false);
+            removeSurvey(survey.surveyId!);
+          }}
+          className='w-full px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
           <span>Delete</span>
           <TrashIcon className='w-4 h-4 ml-2 inline-block text-red-400' />
         </button>
