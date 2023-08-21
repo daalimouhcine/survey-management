@@ -8,20 +8,20 @@ export type Question = {
 
 // type for the survey object
 export type Survey = {
-  SurveyId: number;
-  SurveyName: string;
+  surveyId?: number;
+  surveyName: string;
   startDate: string;
   endDate: string;
   description: string;
   introPrompt: string;
   outroPrompt: string;
   surveyActive: boolean;
-  CreatedBy: string;
+  CreatedBy?: string;
   questions: Question[];
 };
 
 export type createSurveyForm = {
-  title: string;
+  surveyName: string;
   startDate: string;
   endDate: string;
   introPrompt: string;
