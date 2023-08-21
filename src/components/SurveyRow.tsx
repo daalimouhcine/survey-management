@@ -14,7 +14,7 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
             survey={survey}
             isOpen={openDetails}
             setOpen={() => setOpenDetails(!openDetails)}
-            surveyTitle={survey.SurveyName}
+            surveyTitle={survey.surveyName}
           />
         </td>
       </tr>
@@ -25,12 +25,12 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
         <td
           onClick={() => setOpenDetails(true)}
           className='whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6'>
-          {survey.SurveyId}
+          {survey.surveyId}
         </td>
         <td
           onClick={() => setOpenDetails(true)}
           className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-          {survey.SurveyName}
+          {survey.surveyName}
         </td>
         <td
           onClick={() => setOpenDetails(true)}

@@ -5,8 +5,8 @@ import { useState } from "react";
 
 const surveys: Survey[] = [
   {
-    SurveyId: 1234,
-    SurveyName: "Summer 2023",
+    surveyId: 1234,
+    surveyName: "Summer 2023",
     startDate: "2023-01-10T06:14:00Z",
     endDate: "2023-02-10T06:14:00Z",
     description: "This is a short survey to identify your overall satisfaction",
@@ -41,8 +41,8 @@ const surveys: Survey[] = [
     ],
   },
   {
-    SurveyId: 1235,
-    SurveyName: "test for nothing",
+    surveyId: 1235,
+    surveyName: "test for nothing",
     startDate: "2023-01-10T06:14:00Z",
     endDate: "2023-02-10T06:14:00Z",
     description: "This is a short survey to identify your overall satisfaction",
@@ -63,7 +63,7 @@ const SurveyTable = () => {
         <div className='sm:flex-auto'>
           <h1 className='text-xl font-semibold text-gray-900'>Surveys</h1>
           <p className='mt-2 text-sm text-gray-700'>
-            A list of all the surveys in your account including their name,
+            A list of all the surveys including with this details: Id, Name,
             Start Date, End Date, Status and more.
           </p>
         </div>
@@ -169,7 +169,7 @@ const SurveyTable = () => {
                   {surveys.length > 0 ? (
                     surveys.map((survey, index) => (
                       <SurveyRow
-                        key={survey.SurveyId}
+                        key={survey.surveyId}
                         index={index}
                         survey={survey}
                       />
