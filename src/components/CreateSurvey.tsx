@@ -1,5 +1,12 @@
 import { useForm } from "react-hook-form";
-import { createSurveyForm } from "../types";
+import {
+  Question,
+  Survey,
+  createQuestionForm,
+  createSurveyForm,
+} from "../types";
+import { useState } from "react";
+import { TrashIcon } from "@heroicons/react/20/solid";
 
 const CreateSurvey = ({
   isOpen,
@@ -8,51 +15,123 @@ const CreateSurvey = ({
   isOpen: boolean;
   setOpen: any;
 }) => {
+  const [questions, setQuestions] = useState<Question[]>([]);
+
   const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    setError,
-    formState: { errors },
+    register: registerSurvey,
+    handleSubmit: handleSubmitSurvey,
+    reset: resetSurvey,
+    watch: watchSurvey,
+    setError: setErrorSurvey,
+    clearErrors: clearErrorsSurvey,
+    formState: { errors: errorsSurvey },
   } = useForm<createSurveyForm>();
 
-  const onSubmit = (data: createSurveyForm) => {
-    console.log(data);
+  const {
+    register: registerQuestion,
+    handleSubmit: handleSubmitQuestion,
+    reset: resetQuestion,
+    watch: watchQuestion,
+    setError: setErrorQuestion,
+    clearErrors: clearErrorsQuestion,
+    formState: { errors: errorsQuestion },
+  } = useForm<createQuestionForm>();
+
+  const onSubmitSurvey = (data: createSurveyForm) => {
+    const newSurvey: Survey = {
+      surveyName: data.surveyName,
+      surveyActive: true,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      introPrompt: data.introPrompt,
+      outroPrompt: data.outroPrompt,
+      description: data.description,
+      questions: [...questions],
+    };
+    alert(JSON.stringify(newSurvey));
+    cancel();
+  };
+  const onSubmitQuestion = (data: createQuestionForm) => {
+    const newQuestion: Question = {
+      questionNumber: questions.length + 1,
+      questionText: data.questionText,
+      minValue: data.minValue,
+      maxValue: data.maxValue,
+    };
+
+    setQuestions([...questions, newQuestion]);
+    resetQuestion();
+  };
+
+  const removeQuestion = (questionNumber: number) => {
+    setQuestions(
+      questions
+        .filter((question) => question.questionNumber !== questionNumber)
+        .map((question, index) => {
+          return { ...question, questionNumber: index + 1 };
+        })
+    );
   };
 
   const cancel = () => {
-    reset();
+    resetSurvey();
+    resetQuestion();
+    setQuestions([]);
     setOpen(false);
   };
 
-  // validate the start and end date of the survey and ensure that the start date is not after the end date and vice versa and change the error message accordingly
   const validateDate = (date: string, type: string) => {
     if (type === "startDate") {
       if (new Date(date) < new Date()) {
         return "Start Date cannot be before the current date and time";
-      } else if (new Date(date) > new Date(watch("endDate"))) {
-        setError("endDate", {
+      } else if (new Date(date) > new Date(watchSurvey("endDate"))) {
+        setErrorSurvey("endDate", {
           type: "manual",
           message: "End Date cannot be before the Start Date",
         });
         return "Start Date cannot be after the End Date";
       } else {
-        errors.startDate = undefined;
-        errors.endDate = undefined;
-        return true;
+        clearErrorsSurvey("startDate");
+        clearErrorsSurvey("endDate");
       }
     } else {
-      if (new Date(date) < new Date(watch("startDate"))) {
-        setError("startDate", {
+      if (new Date(date) < new Date(watchSurvey("startDate"))) {
+        setErrorSurvey("startDate", {
           type: "manual",
           message: "Start Date cannot be after the End Date",
         });
         return "End Date cannot be before the Start Date";
       } else {
-        errors.startDate = undefined;
-        errors.endDate = undefined;
-        return true;
+        clearErrorsSurvey("startDate");
+        clearErrorsSurvey("endDate");
+      }
+    }
+  };
+
+  const validateMinMax = (data: number, type: string) => {
+    if (type === "minValue") {
+      if (Number(data) > Number(watchQuestion("maxValue").valueOf())) {
+        setErrorQuestion("maxValue", {
+          type: "manual",
+          message: "Max Value cannot be less than Min Value",
+        });
+        return "Min Value cannot be greater than Max Value";
+      } else {
+        clearErrorsQuestion("minValue");
+        clearErrorsQuestion("maxValue");
+        console.log("min hello");
+      }
+    } else {
+      if (Number(data) < Number(watchQuestion("minValue"))) {
+        setErrorQuestion("minValue", {
+          type: "manual",
+          message: "Min Value cannot be greater than Max Value",
+        });
+        return "Max Value cannot be less than Min Value";
+      } else {
+        clearErrorsQuestion("minValue");
+        clearErrorsQuestion("maxValue");
+        console.log("max hello", data, watchQuestion("minValue"));
       }
     }
   };
@@ -63,13 +142,15 @@ const CreateSurvey = ({
         !isOpen ? "-bottom-full" : "-bottom-0"
       } transition-all ease-out duration-500 left-1/2 -translate-x-1/2 overflow-y-scroll hide-scroll-bar`}>
       <div className='bg-white h-3 w-28 rounded-full absolute top-2 left-1/2 -translate-x-1/2'></div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmitSurvey(onSubmitSurvey)}>
         <div className='w-full flex justify-between items-center'>
           <h3 className='font-bold text-xl lg:text-3xl text-gray-900'>
             Create New Survey
           </h3>
           <div className='flex gap-x-2'>
-            <button className='relative px-5 py-2.5 overflow-hidden font-medium text-green-500 bg-gray-100 border border-gray-100 rounded-lg shadow-inner group'>
+            <button
+              type='submit'
+              className='relative px-5 py-2.5 overflow-hidden font-medium text-green-500 bg-gray-100 border border-gray-100 rounded-lg shadow-inner group'>
               <span className='absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-green-400 group-hover:w-full ease'></span>
               <span className='absolute bottom-0 right-0 w-0 h-0 transition-all duration-200 border-b-2 border-green-400 group-hover:w-full ease'></span>
               <span className='absolute top-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-green-400 group-hover:h-full ease'></span>
@@ -103,23 +184,25 @@ const CreateSurvey = ({
               <div className='w-2/4 relative mt-1'>
                 <input
                   className={`peer h-full w-full border-b ${
-                    errors.title ? "border-red-200" : "border-gray-200"
+                    errorsSurvey.surveyName
+                      ? "border-red-200"
+                      : "border-gray-200"
                   } bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all ${
-                    errors.title
+                    errorsSurvey.surveyName
                       ? "placeholder-shown:border-red-200"
                       : "placeholder-shown:border-gray-200"
                   } focus:border-green-500 focus:outline-0 disabled:border-0`}
                   placeholder=' '
                   type='text'
-                  id='title'
-                  {...register("title", { required: true })}
+                  id='surveyName'
+                  {...registerSurvey("surveyName", { required: true })}
                 />
                 <label
-                  htmlFor='title'
+                  htmlFor='surveyName'
                   className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
-                  Survey Title
+                  Survey Name
                 </label>
-                {errors.title && (
+                {errorsSurvey.surveyName && (
                   <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
                     This field is required
                   </p>
@@ -129,16 +212,18 @@ const CreateSurvey = ({
                 <div className='w-1/2 relative'>
                   <input
                     className={`peer h-full w-full border-b ${
-                      errors.startDate ? "border-red-200" : "border-gray-200"
+                      errorsSurvey.startDate
+                        ? "border-red-200"
+                        : "border-gray-200"
                     } bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all ${
-                      errors.startDate
+                      errorsSurvey.startDate
                         ? "placeholder-shown:border-red-200"
                         : "placeholder-shown:border-gray-200"
                     } focus:border-green-500 focus:outline-0 disabled:border-0`}
                     placeholder=' '
                     type='datetime-local'
                     id='startDate'
-                    {...register("startDate", {
+                    {...registerSurvey("startDate", {
                       required: true,
                       validate: (value) => validateDate(value, "startDate"),
                     })}
@@ -148,27 +233,29 @@ const CreateSurvey = ({
                     className="after:content[' '] pointer-events-none absolute left-0 -top-2 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
                     Start Date
                   </label>
-                  {errors.startDate && (
+                  {errorsSurvey.startDate && (
                     <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
-                      {errors.startDate.type === "required"
+                      {errorsSurvey.startDate.type === "required"
                         ? "This field is required"
-                        : errors.startDate.message}
+                        : errorsSurvey.startDate.message}
                     </p>
                   )}
                 </div>
                 <div className='w-1/2 relative'>
                   <input
                     className={`peer h-full w-full border-b ${
-                      errors.endDate ? "border-red-200" : "border-gray-200"
+                      errorsSurvey.endDate
+                        ? "border-red-200"
+                        : "border-gray-200"
                     } bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all ${
-                      errors.endDate
+                      errorsSurvey.endDate
                         ? "placeholder-shown:border-red-200"
                         : "placeholder-shown:border-gray-200"
                     } focus:border-green-500 focus:outline-0 disabled:border-0`}
                     placeholder=' '
                     type='datetime-local'
                     id='endDate'
-                    {...register("endDate", {
+                    {...registerSurvey("endDate", {
                       required: true,
                       validate: (value) => validateDate(value, "endDate"),
                     })}
@@ -178,11 +265,11 @@ const CreateSurvey = ({
                     className="after:content[' '] pointer-events-none absolute left-0 -top-2 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
                     End Date
                   </label>
-                  {errors.endDate && (
+                  {errorsSurvey.endDate && (
                     <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
-                      {errors.endDate.type === "required"
+                      {errorsSurvey.endDate.type === "required"
                         ? "This field is required"
-                        : errors.endDate.message}
+                        : errorsSurvey.endDate.message}
                     </p>
                   )}
                 </div>
@@ -192,23 +279,25 @@ const CreateSurvey = ({
               <div className='w-1/2 relative '>
                 <input
                   className={`peer h-full w-full border-b ${
-                    errors.introPrompt ? "border-red-200" : "border-gray-200"
+                    errorsSurvey.introPrompt
+                      ? "border-red-200"
+                      : "border-gray-200"
                   } bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all ${
-                    errors.introPrompt
+                    errorsSurvey.introPrompt
                       ? "placeholder-shown:border-red-200"
                       : "placeholder-shown:border-gray-200"
                   } focus:border-green-500 focus:outline-0 disabled:border-0`}
                   placeholder=' '
                   type='text'
                   id='introPrompt'
-                  {...register("introPrompt", { required: true })}
+                  {...registerSurvey("introPrompt", { required: true })}
                 />
                 <label
                   htmlFor='introPrompt'
                   className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
                   Intro Prompt
                 </label>
-                {errors.introPrompt && (
+                {errorsSurvey.introPrompt && (
                   <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
                     Intro Prompt is required
                   </p>
@@ -217,23 +306,25 @@ const CreateSurvey = ({
               <div className='w-1/2 relative '>
                 <input
                   className={`peer h-full w-full border-b ${
-                    errors.outroPrompt ? "border-red-200" : "border-gray-200"
+                    errorsSurvey.outroPrompt
+                      ? "border-red-200"
+                      : "border-gray-200"
                   } bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all ${
-                    errors.outroPrompt
+                    errorsSurvey.outroPrompt
                       ? "placeholder-shown:border-red-200"
                       : "placeholder-shown:border-gray-200"
                   } focus:border-green-500 focus:outline-0 disabled:border-0`}
                   placeholder=' '
                   type='text'
                   id='outroPrompt'
-                  {...register("outroPrompt", { required: true })}
+                  {...registerSurvey("outroPrompt", { required: true })}
                 />
                 <label
                   htmlFor='outroPrompt'
                   className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
                   Outro Prompt
                 </label>
-                {errors.outroPrompt && (
+                {errorsSurvey.outroPrompt && (
                   <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
                     Outro Prompt is required
                   </p>
@@ -243,22 +334,24 @@ const CreateSurvey = ({
             <div className='w-full relative'>
               <textarea
                 className={`peer h-full w-full border-b ${
-                  errors.description ? "border-red-200" : "border-gray-200"
+                  errorsSurvey.description
+                    ? "border-red-200"
+                    : "border-gray-200"
                 } bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all ${
-                  errors.description
+                  errorsSurvey.description
                     ? "placeholder-shown:border-red-200"
                     : "placeholder-shown:border-gray-200"
                 } focus:border-green-500 focus:outline-0 disabled:border-0`}
                 placeholder=' '
                 id='description'
-                {...register("description", { required: true })}
+                {...registerSurvey("description", { required: true })}
               />{" "}
               <label
                 htmlFor='description'
                 className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
                 Description
               </label>
-              {errors.description && (
+              {errorsSurvey.description && (
                 <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
                   Description is required
                 </p>
@@ -271,58 +364,87 @@ const CreateSurvey = ({
         <div className='flex justify-between items-center px-5 pt-3'>
           <p className='text-gray-800 text-sm font-medium'>2. Add Questions</p>
         </div>
-        <div className='flex flex-col gap-y-3 my-5 px-5'>
+        <form
+          onSubmit={handleSubmitQuestion(onSubmitQuestion)}
+          className='flex flex-col gap-y-3 my-5 px-5'>
           <div className='w-full flex gap-10'>
             <div className='w-2/4 relative '>
               <input
                 className='peer h-full w-full border-b border-gray-200 bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all placeholder-shown:border-gray-200 focus:border-green-500 focus:outline-0 disabled:border-0'
                 placeholder=' '
                 type='text'
-                name='questionText'
                 id='questionText'
+                {...registerQuestion("questionText", { required: true })}
               />
               <label
                 htmlFor='questionText'
                 className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
                 Question Text
               </label>
+              {errorsQuestion.questionText && (
+                <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
+                  Question Text is required
+                </p>
+              )}
             </div>
             <div className='w-1/4 relative '>
               <input
                 className='peer h-full w-full border-b border-gray-200 bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all placeholder-shown:border-gray-200 focus:border-green-500 focus:outline-0 disabled:border-0'
                 placeholder=' '
                 type='number'
-                name='minValue'
                 id='minValue'
+                {...registerQuestion("minValue", {
+                  required: true,
+                  validate: (value) => validateMinMax(value, "minValue"),
+                })}
               />
               <label
                 htmlFor='minValue'
                 className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
                 Min Value
               </label>
+              {errorsQuestion.minValue && (
+                <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
+                  {errorsQuestion.minValue.type === "required"
+                    ? "Min Value is required"
+                    : errorsQuestion.minValue.message}
+                </p>
+              )}
             </div>
             <div className='w-1/4 relative '>
               <input
                 className='peer h-full w-full border-b border-gray-200 bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all placeholder-shown:border-gray-200 focus:border-green-500 focus:outline-0 disabled:border-0'
                 placeholder=' '
                 type='number'
-                name='maxValue'
                 id='maxValue'
+                {...registerQuestion("maxValue", {
+                  required: true,
+                  validate: (value) => validateMinMax(value, "maxValue"),
+                })}
               />
               <label
                 htmlFor='maxValue'
                 className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
                 Max Value
               </label>
+              {errorsQuestion.maxValue && (
+                <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
+                  {errorsQuestion.maxValue.type === "required"
+                    ? "Max Value is required"
+                    : errorsQuestion.maxValue.message}
+                </p>
+              )}
             </div>
           </div>
-          <button className='self-end relative inline-flex items-center justify-start px-5 py-2.5  overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group'>
+          <button
+            type='submit'
+            className='self-end relative inline-flex items-center justify-start px-5 py-2.5 mt-5 overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group'>
             <span className='w-48 h-48 rounded rotate-[-40deg] bg-green-600 absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 ml-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0'></span>
             <span className='relative w-full text-left text-black transition-colors duration-300 ease-in-out group-hover:text-white'>
               Add Question
             </span>
           </button>
-        </div>
+        </form>
         <div className='-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8'>
           <div className='inline-block min-w-full py-2 align-middle md:px-6 lg:px-8'>
             <div className='overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg'>
@@ -349,9 +471,51 @@ const CreateSurvey = ({
                       className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'>
                       Max Value
                     </th>
+                    <th
+                      scope='col'
+                      className='px-3 py-3.5 text-left text-sm font-semibold text-gray-900'>
+                      Actions
+                    </th>
                   </tr>
                 </thead>
-                <tbody className='bg-white'></tbody>
+                <tbody className='bg-white'>
+                  {questions.length > 0 ? (
+                    questions.map((question: Question) => (
+                      <tr key={question.questionNumber}>
+                        <td className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
+                          {question.questionNumber}
+                        </td>
+                        <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>
+                          {question.questionText}
+                        </td>
+                        <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>
+                          {question.minValue}
+                        </td>
+                        <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>
+                          {question.maxValue}
+                        </td>
+                        <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>
+                          <button
+                            onClick={() => {
+                              removeQuestion(question.questionNumber);
+                            }}
+                            className='text-red-600 hover:text-red-900'>
+                            <TrashIcon className='w-5 h-5' />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        align='center'
+                        colSpan={5}
+                        className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
+                        No Questions
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
             </div>
           </div>
