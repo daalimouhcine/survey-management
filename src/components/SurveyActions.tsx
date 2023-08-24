@@ -8,6 +8,7 @@ import {
 import { Survey } from "../types";
 import { useClickOutside } from "../hooks/useClickOutside";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const SurveyActions = ({
   survey,
@@ -32,7 +33,18 @@ const SurveyActions = ({
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire("Deleted!", "Your Survey has been deleted.", "success");
+        axios
+          .delete(
+            "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys/" +
+              surveyId
+          )
+          .then((res) => {
+            console.log(res.data);
+            if (res.data.statusCode == 200) {
+              const responseMessage = JSON.parse(res.data.body);
+              Swal.fire("Deleted!", responseMessage.message, "success");
+            }
+          });
       }
     });
   };
