@@ -107,7 +107,7 @@ const SurveyDetails = ({
                   </tr>
                 </thead>
                 <tbody className='bg-white'>
-                  {survey.questions.length > 0 ? (
+                  {survey.questions?.length > 0 ? (
                     survey.questions.map((question, index) => (
                       <QuestionRow
                         key={question.questionNumber}
