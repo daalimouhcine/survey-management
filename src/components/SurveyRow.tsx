@@ -55,7 +55,7 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
         <td
           onClick={() => setOpenDetails(true)}
           className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-          {survey.questions.length}
+          {survey.questions?.length || 0}
         </td>
         <td
           onClick={() => setOpenDetails(true)}
