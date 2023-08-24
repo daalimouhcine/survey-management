@@ -1,62 +1,32 @@
 import SurveyRow from "./SurveyRow";
 import { Survey } from "../types";
 import CreateSurvey from "./CreateSurvey";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const surveys: Survey[] = [
-  {
-    surveyId: 1234,
-    surveyName: "Summer 2023",
-    startDate: "2023-01-10T06:14:00Z",
-    endDate: "2023-02-10T06:14:00Z",
-    description: "This is a short survey to identify your overall satisfaction",
-    introPrompt:
-      "You will hear 3 short questions related to the service we provide for you. Please answer each question by speaking the corresponding number into your telephone.",
-    outroPrompt:
-      "Thank you very much for participating. Have a nice day. Good Bye!",
-    surveyActive: true,
-    CreatedBy: "Anna Rodriques",
-    questions: [
-      {
-        questionNumber: 1,
-        maxValue: 5,
-        minValue: 1,
-        questionText:
-          "On a scale of 1 to 5, with 1 being unsatisfied and 5 being very satisfied, how would you rate your overall satisfaction with the support you received?",
-      },
-      {
-        questionNumber: 2,
-        maxValue: 5,
-        minValue: 1,
-        questionText:
-          "On a scale of 1 to 5, with 1 being unsatisfied and 5 being very satisfied, how would you rate the knowledge of the agent and their ability to address your issue?",
-      },
-      {
-        questionNumber: 3,
-        maxValue: 6,
-        minValue: 1,
-        questionText:
-          "On a scale of 1 to 5, with 1 being unsatisfied and 5 being very satisfied, how would you rate the time it took to resolve your issue?",
-      },
-    ],
-  },
-  {
-    surveyId: 1235,
-    surveyName: "test for nothing",
-    startDate: "2023-01-10T06:14:00Z",
-    endDate: "2023-02-10T06:14:00Z",
-    description: "This is a short survey to identify your overall satisfaction",
-    introPrompt:
-      "You will hear 3 short questions related to the service we provide for you. Please answer each question by speaking the corresponding number into your telephone.",
-    outroPrompt:
-      "Thank you very much for participating. Have a nice day. Good Bye!",
-    surveyActive: true,
-    CreatedBy: "Anna Rodriques",
-    questions: [],
-  },
-];
 const SurveyTable = () => {
   const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
+  const [surveys, setSurveys] = useState<Survey[]>([]);
+
+  useEffect(() => {
+    const getSurveys = async () => {
+      await axios
+        .get(
+          "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys"
+        )
+        .then((res) => {
+          const surveysWithoutContent = res.data.body
+            .filter((item: any) => item.content)
+            .map((item: any) => {
+              const { content } = item; // Remove the "content" property
+              return content;
+            });
+          setSurveys([...surveysWithoutContent]);
+        });
+    };
+    getSurveys();
+  }, []);
+
   return (
     <div className='px-4 sm:px-6 lg:px-8 mt-10'>
       <div className='sm:flex sm:items-center'>
@@ -166,7 +136,7 @@ const SurveyTable = () => {
                   </tr>
                 </thead>
                 <tbody className='bg-white'>
-                  {surveys.length > 0 ? (
+                  {surveys?.length > 0 ? (
                     surveys.map((survey, index) => (
                       <SurveyRow
                         key={survey.surveyId}
