@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import { TrashIcon } from "@heroicons/react/20/solid";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const CreateSurvey = ({
   isOpen,
@@ -46,10 +47,30 @@ const CreateSurvey = ({
       endDate: data.endDate,
       introPrompt: data.introPrompt,
       outroPrompt: data.outroPrompt,
+      CreatedBy: "Mouhcine Daali",
       description: data.description,
       questions: [...questions],
     };
-    alert(JSON.stringify(newSurvey));
+    axios.post("https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys", newSurvey).then(res => {
+      if(res.data.statusCode == 200) {
+        const responseMessage = JSON.parse(res.data.body);
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: responseMessage.message,
+          showConfirmButton: false,
+          timer: 1500
+        })
+      } else {
+        Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: 'Something Went Wrong',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      }
+    })
     cancel(false);
   };
   const onSubmitQuestion = (data: createQuestionForm) => {
