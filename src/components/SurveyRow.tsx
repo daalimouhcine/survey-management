@@ -3,7 +3,7 @@ import { useState } from "react";
 import SurveyDetails from "./SurveyDetails";
 import SurveyActions from "./SurveyActions";
 
-const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
+const SurveyRow = ({ survey, index, setReFetch }: { survey: Survey; index: number; setReFetch: any }) => {
   const [openDetails, setOpenDetails] = useState(false);
 
   return (
@@ -74,6 +74,7 @@ const SurveyRow = ({ survey, index }: { survey: Survey; index: number }) => {
           <SurveyActions
             survey={survey}
             viewDetails={() => setOpenDetails(true)}
+            setReFetch={setReFetch}
           />
         </td>
       </tr>

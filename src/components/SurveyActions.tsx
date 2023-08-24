@@ -13,9 +13,11 @@ import axios from "axios";
 const SurveyActions = ({
   survey,
   viewDetails,
+  setReFetch,
 }: {
   survey: Survey;
   viewDetails: any;
+  setReFetch: any;
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => {
@@ -39,10 +41,10 @@ const SurveyActions = ({
               surveyId
           )
           .then((res) => {
-            console.log(res.data);
             if (res.data.statusCode == 200) {
               const responseMessage = JSON.parse(res.data.body);
               Swal.fire("Deleted!", responseMessage.message, "success");
+              setReFetch();
             }
           });
       }

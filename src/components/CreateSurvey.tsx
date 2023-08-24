@@ -13,9 +13,11 @@ import axios from "axios";
 const CreateSurvey = ({
   isOpen,
   setOpen,
+  setReFetch
 }: {
   isOpen: boolean;
   setOpen: any;
+  setReFetch: any;
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
 
@@ -52,6 +54,7 @@ const CreateSurvey = ({
       questions: [...questions],
     };
     axios.post("https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys", newSurvey).then(res => {
+      setReFetch();
       if(res.data.statusCode == 200) {
         const responseMessage = JSON.parse(res.data.body);
         Swal.fire({

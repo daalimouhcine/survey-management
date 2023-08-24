@@ -6,26 +6,30 @@ import axios from "axios";
 
 const SurveyTable = () => {
   const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [reFetch, setReFetch] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     const getSurveys = async () => {
       await axios
         .get(
           "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys"
         )
-        .then((res) => {
+        .then((res: { data: { body: { content: Survey }[] } }) => {
           const surveysWithoutContent = res.data.body
-            .filter((item: any) => item.content)
-            .map((item: any) => {
-              const { content } = item; // Remove the "content" property
+            .filter((item: { content: Survey }) => item.content)
+            .map((item: { content: Survey }) => {
+              const { content } = item;
               return content;
             });
           setSurveys([...surveysWithoutContent]);
+          setLoading(false);
         });
     };
     getSurveys();
-  }, []);
+  }, [reFetch]);
 
   return (
     <div className='px-4 sm:px-6 lg:px-8 mt-10'>
@@ -41,6 +45,7 @@ const SurveyTable = () => {
           <CreateSurvey
             isOpen={createSurveyOpen}
             setOpen={() => setCreateSurveyOpen(false)}
+            setReFetch={() => setReFetch(!reFetch)}
           />
           <button
             onClick={() => setCreateSurveyOpen(true)}
@@ -136,12 +141,21 @@ const SurveyTable = () => {
                   </tr>
                 </thead>
                 <tbody className='bg-white'>
-                  {surveys?.length > 0 ? (
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan={9}
+                        className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center'>
+                        Loading...
+                      </td>
+                    </tr>
+                  ) : surveys?.length > 0 ? (
                     surveys.map((survey, index) => (
                       <SurveyRow
                         key={survey.surveyId}
                         index={index}
                         survey={survey}
+                        setReFetch={() => setReFetch(!reFetch)}
                       />
                     ))
                   ) : (
