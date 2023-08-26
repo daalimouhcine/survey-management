@@ -377,8 +377,8 @@ const CreateSurvey = ({
             1. Start with setting up your survey information
           </p>
           <div className='flex flex-col gap-y-8'>
-            <div className='flex gap-x-5'>
-              <div className='w-2/4 relative mt-1'>
+            <div className='flex max-md:flex-col gap-x-5'>
+              <div className='w-2/4 max-md:w-full relative mt-1'>
                 <input
                   className={`peer h-full w-full border-b ${
                     errorsSurvey.surveyName
@@ -405,7 +405,7 @@ const CreateSurvey = ({
                   </p>
                 )}
               </div>
-              <div className='flex gap-x-5 w-2/4'>
+              <div className='flex max-md:mt-10 gap-x-5 w-2/4 max-md:w-full'>
                 <div className='w-1/2 relative'>
                   <input
                     className={`peer h-full w-full border-b ${
@@ -568,8 +568,8 @@ const CreateSurvey = ({
         <form
           onSubmit={handleSubmitQuestion(onSubmitQuestion)}
           className='flex flex-col gap-y-3 my-5 px-5'>
-          <div className='w-full flex gap-10'>
-            <div className='w-2/4 relative '>
+          <div className='w-full flex max-sm:flex-col gap-10'>
+            <div className='w-2/4 max-sm:w-full relative '>
               <input
                 className='peer h-full w-full border-b border-gray-200 bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all placeholder-shown:border-gray-200 focus:border-green-500 focus:outline-0 disabled:border-0'
                 placeholder=' '
@@ -588,53 +588,55 @@ const CreateSurvey = ({
                 </p>
               )}
             </div>
-            <div className='w-1/4 relative '>
-              <input
-                className='peer h-full w-full border-b border-gray-200 bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all placeholder-shown:border-gray-200 focus:border-green-500 focus:outline-0 disabled:border-0'
-                placeholder=' '
-                type='number'
-                id='minValue'
-                {...registerQuestion("minValue", {
-                  required: true,
-                  validate: (value) => validateMinMax(value, "minValue"),
-                })}
-              />
-              <label
-                htmlFor='minValue'
-                className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
-                Min Value
-              </label>
-              {errorsQuestion.minValue && (
-                <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
-                  {errorsQuestion.minValue.type === "required"
-                    ? "Min Value is required"
-                    : errorsQuestion.minValue.message}
-                </p>
-              )}
-            </div>
-            <div className='w-1/4 relative '>
-              <input
-                className='peer h-full w-full border-b border-gray-200 bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all placeholder-shown:border-gray-200 focus:border-green-500 focus:outline-0 disabled:border-0'
-                placeholder=' '
-                type='number'
-                id='maxValue'
-                {...registerQuestion("maxValue", {
-                  required: true,
-                  validate: (value) => validateMinMax(value, "maxValue"),
-                })}
-              />
-              <label
-                htmlFor='maxValue'
-                className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
-                Max Value
-              </label>
-              {errorsQuestion.maxValue && (
-                <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
-                  {errorsQuestion.maxValue.type === "required"
-                    ? "Max Value is required"
-                    : errorsQuestion.maxValue.message}
-                </p>
-              )}
+            <div className='w-2/4 max-sm:w-full flex'>
+              <div className='w-1/2 relative '>
+                <input
+                  className='peer h-full w-full border-b border-gray-200 bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all placeholder-shown:border-gray-200 focus:border-green-500 focus:outline-0 disabled:border-0'
+                  placeholder=' '
+                  type='number'
+                  id='minValue'
+                  {...registerQuestion("minValue", {
+                    required: true,
+                    validate: (value) => validateMinMax(value, "minValue"),
+                  })}
+                />
+                <label
+                  htmlFor='minValue'
+                  className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
+                  Min Value
+                </label>
+                {errorsQuestion.minValue && (
+                  <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
+                    {errorsQuestion.minValue.type === "required"
+                      ? "Min Value is required"
+                      : errorsQuestion.minValue.message}
+                  </p>
+                )}
+              </div>
+              <div className='w-1/2 relative '>
+                <input
+                  className='peer h-full w-full border-b border-gray-200 bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all placeholder-shown:border-gray-200 focus:border-green-500 focus:outline-0 disabled:border-0'
+                  placeholder=' '
+                  type='number'
+                  id='maxValue'
+                  {...registerQuestion("maxValue", {
+                    required: true,
+                    validate: (value) => validateMinMax(value, "maxValue"),
+                  })}
+                />
+                <label
+                  htmlFor='maxValue'
+                  className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
+                  Max Value
+                </label>
+                {errorsQuestion.maxValue && (
+                  <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
+                    {errorsQuestion.maxValue.type === "required"
+                      ? "Max Value is required"
+                      : errorsQuestion.maxValue.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
           <button
@@ -646,9 +648,9 @@ const CreateSurvey = ({
             </span>
           </button>
         </form>
-        <div className='-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8'>
-          <div className='inline-block min-w-full py-2 align-middle md:px-6 lg:px-8'>
-            <div className='overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg'>
+        <div className='w-full'>
+          <div className='w-full p-3 '>
+            <div className='overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 md:rounded-lg'>
               <table className='min-w-full divide-y divide-gray-300'>
                 <thead className='bg-gray-50'>
                   <tr>
