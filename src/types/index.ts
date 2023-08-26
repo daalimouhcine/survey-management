@@ -30,6 +30,7 @@ export type createSurveyForm = {
 };
 
 export type createQuestionForm = {
+  questionNumber?: number;
   questionText: string;
   minValue: number;
   maxValue: number;
