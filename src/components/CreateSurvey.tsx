@@ -6,20 +6,25 @@ import {
   createSurveyForm,
 } from "../types";
 import { useState } from "react";
-import { TrashIcon } from "@heroicons/react/20/solid";
+import {
+  PencilIcon,
+  TrashIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import Swal from "sweetalert2";
 import axios from "axios";
 
 const CreateSurvey = ({
   isOpen,
   setOpen,
-  setReFetch
+  setReFetch,
 }: {
   isOpen: boolean;
   setOpen: any;
   setReFetch: any;
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [questionOnEdit, setQuestionOnEdit] = useState<number>(0);
 
   const {
     register: registerSurvey,
@@ -53,49 +58,104 @@ const CreateSurvey = ({
       description: data.description,
       questions: [...questions],
     };
-    axios.post("https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys", newSurvey).then(res => {
-      setReFetch();
-      if(res.data.statusCode == 200) {
-        const responseMessage = JSON.parse(res.data.body);
-        Swal.fire({
-          position: 'center',
-          icon: 'success',
-          title: responseMessage.message,
-          showConfirmButton: false,
-          timer: 1500
-        })
-      } else {
-        Swal.fire({
-          position: 'center',
-          icon: 'error',
-          title: 'Something Went Wrong',
-          showConfirmButton: false,
-          timer: 1500
-        })
-      }
-    })
+    axios
+      .post(
+        "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys",
+        newSurvey
+      )
+      .then((res) => {
+        setReFetch();
+        if (res.data.statusCode == 200) {
+          const responseMessage = JSON.parse(res.data.body);
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: responseMessage.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "Something Went Wrong",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      });
     cancel(false);
   };
   const onSubmitQuestion = (data: createQuestionForm) => {
-    const newQuestion: Question = {
-      questionNumber: questions.length + 1,
-      questionText: data.questionText,
-      minValue: data.minValue,
-      maxValue: data.maxValue,
-    };
+    if (data.questionNumber) {
+      const newQuestion: Question = {
+        questionNumber: data.questionNumber,
+        questionText: data.questionText,
+        minValue: data.minValue,
+        maxValue: data.maxValue,
+      };
 
-    setQuestions([...questions, newQuestion]);
-    resetQuestion();
+      // edit question in questions array and update the state with the new array of questions with the edited question and the same order
+      setQuestions(
+        questions.map((question) => {
+          if (question.questionNumber === data.questionNumber) {
+            return newQuestion;
+          } else {
+            return question;
+          }
+        })
+      );
+      setQuestionOnEdit(0);
+    } else {
+      const newQuestion: Question = {
+        questionNumber: questions.length + 1,
+        questionText: data.questionText,
+        minValue: data.minValue,
+        maxValue: data.maxValue,
+      };
+
+      setQuestions([...questions, newQuestion]);
+    }
+    resetQuestion({ questionText: "", minValue: NaN, maxValue: NaN });
   };
 
-  const removeQuestion = (questionNumber: number) => {
-    setQuestions(
-      questions
-        .filter((question) => question.questionNumber !== questionNumber)
-        .map((question, index) => {
-          return { ...question, questionNumber: index + 1 };
-        })
+  const editQuestion = (questionNumber: number) => {
+    setQuestionOnEdit(questionNumber);
+    const question = questions.find(
+      (question) => question.questionNumber === questionNumber
     );
+    if (question) {
+      resetQuestion({
+        questionNumber: question.questionNumber,
+        questionText: question.questionText,
+        minValue: question.minValue,
+        maxValue: question.maxValue,
+      });
+    }
+  };
+  const cancelEdit = () => {
+    setQuestionOnEdit(0);
+    resetQuestion({ questionText: "", minValue: NaN, maxValue: NaN });
+  };
+  const removeQuestion = (questionNumber: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Remove it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setQuestions(
+          questions.filter(
+            (question) => question.questionNumber !== questionNumber
+          )
+        );
+        Swal.fire("Removed!", "Your question has been removed.", "success");
+      }
+    });
   };
 
   const cancel = (validation: boolean) => {
@@ -120,17 +180,23 @@ const CreateSurvey = ({
       }).then((result) => {
         if (result.isConfirmed) {
           resetSurvey();
-          resetQuestion();
+          resetQuestion({ questionText: "", minValue: NaN, maxValue: NaN });
           setQuestions([]);
           setOpen(false);
-          Swal.fire("Canceled!", "Your operation has been canceled.", "success");
+          questionOnEdit && setQuestionOnEdit(0);
+          Swal.fire(
+            "Canceled!",
+            "Your operation has been canceled.",
+            "success"
+          );
         }
       });
     } else {
       resetSurvey();
-      resetQuestion();
+      resetQuestion({ questionText: "", minValue: NaN, maxValue: NaN });
       setQuestions([]);
       setOpen(false);
+      questionOnEdit && setQuestionOnEdit(0);
     }
   };
 
@@ -495,7 +561,7 @@ const CreateSurvey = ({
             className='self-end relative inline-flex items-center justify-start px-5 py-2.5 mt-5 overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group'>
             <span className='w-48 h-48 rounded rotate-[-40deg] bg-green-600 absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 ml-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0'></span>
             <span className='relative w-full text-left text-black transition-colors duration-300 ease-in-out group-hover:text-white'>
-              Add Question
+              {questionOnEdit ? "Edit Question" : "Add Question"}
             </span>
           </button>
         </form>
@@ -535,7 +601,12 @@ const CreateSurvey = ({
                 <tbody className='bg-white'>
                   {questions.length > 0 ? (
                     questions.map((question: Question) => (
-                      <tr key={question.questionNumber}>
+                      <tr
+                        key={question.questionNumber}
+                        className={`${
+                          questionOnEdit === question.questionNumber &&
+                          "bg-green-300"
+                        }`}>
                         <td className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
                           {question.questionNumber}
                         </td>
@@ -548,13 +619,30 @@ const CreateSurvey = ({
                         <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>
                           {question.maxValue}
                         </td>
-                        <td className='px-4 py-4 whitespace-nowrap text-sm text-gray-500'>
+                        <td className='flex gap-x-3 px-4 py-4 whitespace-nowrap text-sm text-gray-500'>
                           <button
                             onClick={() => {
                               removeQuestion(question.questionNumber);
                             }}
                             className='text-red-600 hover:text-red-900'>
                             <TrashIcon className='w-5 h-5' />
+                          </button>
+                          <button
+                            onClick={() => {
+                              questionOnEdit
+                                ? cancelEdit()
+                                : editQuestion(question.questionNumber);
+                            }}
+                            className={`${
+                              questionOnEdit
+                                ? "text-gray-600 hover:text-gray-900"
+                                : "text-green-600 hover:text-green-900"
+                            }`}>
+                            {questionOnEdit ? (
+                              <XMarkIcon className='w-5 h-5 bg-gray-200/70 rounded-md' />
+                            ) : (
+                              <PencilIcon className='w-5 h-5' />
+                            )}
                           </button>
                         </td>
                       </tr>
