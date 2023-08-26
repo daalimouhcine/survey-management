@@ -9,6 +9,7 @@ const SurveyTable = () => {
   const [loading, setLoading] = useState(false);
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [reFetch, setReFetch] = useState(false);
+  const [surveyToEdit, setSurveyToEdit] = useState<Survey | undefined>();
 
   useEffect(() => {
     setLoading(true);
@@ -31,6 +32,16 @@ const SurveyTable = () => {
     getSurveys();
   }, [reFetch]);
 
+  useEffect(() => {
+    if (surveyToEdit) {
+      setCreateSurveyOpen(true);
+    }
+  }, [surveyToEdit]);
+
+  const removeEditSurvey = () => {
+    setSurveyToEdit(undefined);
+  };
+
   return (
     <div className='px-4 sm:px-6 lg:px-8 mt-10'>
       <div className='sm:flex sm:items-center'>
@@ -46,6 +57,8 @@ const SurveyTable = () => {
             isOpen={createSurveyOpen}
             setOpen={() => setCreateSurveyOpen(false)}
             setReFetch={() => setReFetch(!reFetch)}
+            surveyToEdit={surveyToEdit}
+            removeEditSurvey={removeEditSurvey}
           />
           <button
             onClick={() => setCreateSurveyOpen(true)}
@@ -156,6 +169,8 @@ const SurveyTable = () => {
                         index={index}
                         survey={survey}
                         setReFetch={() => setReFetch(!reFetch)}
+                        setSurveyToEdit={setSurveyToEdit}
+                        setOpenEdit={() => setCreateSurveyOpen(true)}
                       />
                     ))
                   ) : (

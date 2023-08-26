@@ -14,10 +14,14 @@ const SurveyActions = ({
   survey,
   viewDetails,
   setReFetch,
+  setSurveyToEdit,
+  setOpenEdit,
 }: {
   survey: Survey;
   viewDetails: any;
   setReFetch: any;
+  setSurveyToEdit: any;
+  setOpenEdit: any;
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => {
@@ -51,6 +55,11 @@ const SurveyActions = ({
     });
   };
 
+  const editSurvey = (survey: Survey) => {
+    setSurveyToEdit(survey);
+    setOpenEdit(true);
+  };
+
   return (
     <div ref={open ? ref : undefined} className='relative'>
       <button
@@ -71,7 +80,12 @@ const SurveyActions = ({
           <span>Details</span>
           <EyeIcon className='w-4 h-4 ml-2 inline-block text-green-400' />
         </button>
-        <button className='w-full items-center justify-center flex px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
+        <button
+          onClick={() => {
+            setOpen(false);
+            editSurvey(survey);
+          }}
+          className='w-full items-center justify-center flex px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
           <span>Edit</span>
           <PencilSquareIcon className='w-4 h-4 ml-2 inline-block text-blue-400' />
         </button>

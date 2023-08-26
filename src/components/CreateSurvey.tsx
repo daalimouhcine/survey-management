@@ -5,12 +5,8 @@ import {
   createQuestionForm,
   createSurveyForm,
 } from "../types";
-import { useState } from "react";
-import {
-  PencilIcon,
-  TrashIcon,
-  XMarkIcon,
-} from "@heroicons/react/20/solid";
+import { useEffect, useState } from "react";
+import { PencilIcon, TrashIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -18,10 +14,14 @@ const CreateSurvey = ({
   isOpen,
   setOpen,
   setReFetch,
+  surveyToEdit,
+  removeEditSurvey,
 }: {
   isOpen: boolean;
   setOpen: any;
   setReFetch: any;
+  surveyToEdit?: Survey;
+  removeEditSurvey: any;
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [questionOnEdit, setQuestionOnEdit] = useState<number>(0);
@@ -35,7 +35,6 @@ const CreateSurvey = ({
     clearErrors: clearErrorsSurvey,
     formState: { errors: errorsSurvey },
   } = useForm<createSurveyForm>();
-
   const {
     register: registerQuestion,
     handleSubmit: handleSubmitQuestion,
@@ -45,48 +44,108 @@ const CreateSurvey = ({
     clearErrors: clearErrorsQuestion,
     formState: { errors: errorsQuestion },
   } = useForm<createQuestionForm>();
+  useEffect(() => {
+    setQuestions(surveyToEdit?.questions || []);
+    resetSurvey({
+      surveyName: surveyToEdit?.surveyName || "",
+      startDate: surveyToEdit?.startDate
+        ? new Date(surveyToEdit.startDate).toISOString().replace("Z", "")
+        : "",
+      endDate: surveyToEdit?.endDate
+        ? new Date(surveyToEdit.endDate).toISOString().replace("Z", "")
+        : "",
+      introPrompt: surveyToEdit?.introPrompt || "",
+      outroPrompt: surveyToEdit?.outroPrompt || "",
+      description: surveyToEdit?.description || "",
+    });
+  }, [isOpen]);
 
   const onSubmitSurvey = (data: createSurveyForm) => {
-    const newSurvey: Survey = {
-      surveyName: data.surveyName,
-      surveyActive: true,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      introPrompt: data.introPrompt,
-      outroPrompt: data.outroPrompt,
-      CreatedBy: "Mouhcine Daali",
-      description: data.description,
-      questions: [...questions],
-    };
-    axios
-      .post(
-        "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys",
-        newSurvey
-      )
-      .then((res) => {
-        setReFetch();
-        if (res.data.statusCode == 200) {
-          const responseMessage = JSON.parse(res.data.body);
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: responseMessage.message,
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        } else {
-          Swal.fire({
-            position: "center",
-            icon: "error",
-            title: "Something Went Wrong",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        }
-      });
+    if (surveyToEdit) {
+      const editedSurvey: Survey = {
+        surveyId: surveyToEdit.surveyId,
+        surveyName: data.surveyName,
+        surveyActive: surveyToEdit.surveyActive,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        introPrompt: data.introPrompt,
+        outroPrompt: data.outroPrompt,
+        CreatedBy: surveyToEdit.CreatedBy,
+        description: data.description,
+        questions: [...questions],
+      };
+
+      axios
+        .patch(
+          "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys/" +
+            surveyToEdit.surveyId,
+          editedSurvey
+        )
+        .then((res) => {
+          setReFetch();
+          if (res.data.statusCode == 200) {
+            const responseMessage = JSON.parse(res.data.body);
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: responseMessage.message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } else {
+            Swal.fire({
+              position: "center",
+              icon: "error",
+              title: "Something Went Wrong",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+        });
+    } else {
+      const newSurvey: Survey = {
+        surveyName: data.surveyName,
+        surveyActive: true,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        introPrompt: data.introPrompt,
+        outroPrompt: data.outroPrompt,
+        CreatedBy: "Mouhcine Daali",
+        description: data.description,
+        questions: [...questions],
+      };
+      axios
+        .post(
+          "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys",
+          newSurvey
+        )
+        .then((res) => {
+          setReFetch();
+          if (res.data.statusCode == 200) {
+            const responseMessage = JSON.parse(res.data.body);
+            Swal.fire({
+              position: "center",
+              icon: "success",
+              title: responseMessage.message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } else {
+            Swal.fire({
+              position: "center",
+              icon: "error",
+              title: "Something Went Wrong",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+        });
+    }
     cancel(false);
   };
   const onSubmitQuestion = (data: createQuestionForm) => {
+    console.log(surveyToEdit);
+
     if (data.questionNumber) {
       const newQuestion: Question = {
         questionNumber: data.questionNumber,
@@ -179,7 +238,14 @@ const CreateSurvey = ({
         confirmButtonText: "Yes, Cancel!",
       }).then((result) => {
         if (result.isConfirmed) {
-          resetSurvey();
+          resetSurvey({
+            surveyName: "",
+            startDate: "",
+            endDate: "",
+            introPrompt: "",
+            outroPrompt: "",
+            description: "",
+          });
           resetQuestion({ questionText: "", minValue: NaN, maxValue: NaN });
           setQuestions([]);
           setOpen(false);
@@ -192,11 +258,22 @@ const CreateSurvey = ({
         }
       });
     } else {
-      resetSurvey();
+      resetSurvey({
+        surveyName: "",
+        startDate: "",
+        endDate: "",
+        introPrompt: "",
+        outroPrompt: "",
+        description: "",
+      });
       resetQuestion({ questionText: "", minValue: NaN, maxValue: NaN });
       setQuestions([]);
       setOpen(false);
       questionOnEdit && setQuestionOnEdit(0);
+    }
+
+    if (surveyToEdit) {
+      removeEditSurvey();
     }
   };
 
@@ -265,7 +342,7 @@ const CreateSurvey = ({
       <form onSubmit={handleSubmitSurvey(onSubmitSurvey)}>
         <div className='w-full flex justify-between items-center'>
           <h3 className='font-bold text-xl lg:text-3xl text-gray-900'>
-            Create New Survey
+            {surveyToEdit ? "Edit Survey" : "Create Survey"}
           </h3>
           <div className='flex gap-x-2'>
             <button
@@ -277,7 +354,7 @@ const CreateSurvey = ({
               <span className='absolute bottom-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-green-400 group-hover:h-full ease'></span>
               <span className='absolute inset-0 w-full h-full duration-300 delay-300 bg-green-500 opacity-0 group-hover:opacity-100'></span>
               <span className='relative transition-colors duration-300 delay-200 group-hover:text-white ease'>
-                Create
+                {surveyToEdit ? "Save" : "Create"}
               </span>
             </button>
             <button
@@ -344,8 +421,10 @@ const CreateSurvey = ({
                     type='datetime-local'
                     id='startDate'
                     {...registerSurvey("startDate", {
+                      valueAsDate: true,
                       required: true,
-                      validate: (value) => validateDate(value, "startDate"),
+                      validate: (value) =>
+                        validateDate(value.toLocaleString(), "startDate"),
                     })}
                   />
                   <label
@@ -376,8 +455,10 @@ const CreateSurvey = ({
                     type='datetime-local'
                     id='endDate'
                     {...registerSurvey("endDate", {
+                      valueAsDate: true,
                       required: true,
-                      validate: (value) => validateDate(value, "endDate"),
+                      validate: (value) =>
+                        validateDate(value.toString(), "endDate"),
                     })}
                   />
                   <label
