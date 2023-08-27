@@ -4,8 +4,6 @@ import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/20/solid'
 const profile = {
   name: 'Mouhcine Daali',
   email: 'the.daali.mouhcine@gmail.com',
-  backgroundImage:
-    'https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80',
   fields: [
     ['Phone', '(555) 123-4567'],
     ['Email', 'ricardocooper@example.com'],
@@ -22,7 +20,7 @@ export default function Heading() {
   return (
     <div>
       <div>
-        <img className="h-32 w-full object-cover lg:h-48" src={profile.backgroundImage} alt="" />
+        <img className="h-32 w-full object-cover lg:h-48" src="bg-img.png" alt="" />
       </div>
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5">
