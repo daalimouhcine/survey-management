@@ -2,19 +2,14 @@ import { Survey } from "../types";
 import { useState } from "react";
 import SurveyDetails from "./SurveyDetails";
 import SurveyActions from "./SurveyActions";
+import { SurveyRowProps } from "../interfaces";
 
-const SurveyRow = ({
+const SurveyRow: React.FC<SurveyRowProps> = ({
   survey,
   index,
   setReFetch,
   setSurveyToEdit,
   setOpenEdit,
-}: {
-  survey: Survey;
-  index: number;
-  setReFetch: any;
-  setSurveyToEdit: any;
-  setOpenEdit: any;
 }) => {
   const [openDetails, setOpenDetails] = useState(false);
 
@@ -92,7 +87,7 @@ const SurveyRow = ({
             viewDetails={() => setOpenDetails(true)}
             setReFetch={setReFetch}
             setSurveyToEdit={editSurvey}
-            setOpenEdit={() => setOpenEdit(true)}
+            setOpenEdit={() => setOpenEdit()}
           />
         </td>
       </tr>

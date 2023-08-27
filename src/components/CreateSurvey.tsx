@@ -9,19 +9,15 @@ import { useEffect, useState } from "react";
 import { PencilIcon, TrashIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { CreateSurveyProps } from "../interfaces";
 
-const CreateSurvey = ({
+
+const CreateSurvey: React.FC<CreateSurveyProps> = ({
   isOpen,
   setOpen,
   setReFetch,
   surveyToEdit,
   removeEditSurvey,
-}: {
-  isOpen: boolean;
-  setOpen: any;
-  setReFetch: any;
-  surveyToEdit?: Survey;
-  removeEditSurvey: any;
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [questionOnEdit, setQuestionOnEdit] = useState<number>(0);
@@ -248,7 +244,7 @@ const CreateSurvey = ({
           });
           resetQuestion({ questionText: "", minValue: NaN, maxValue: NaN });
           setQuestions([]);
-          setOpen(false);
+          setOpen();
           questionOnEdit && setQuestionOnEdit(0);
           Swal.fire(
             "Canceled!",
@@ -268,7 +264,7 @@ const CreateSurvey = ({
       });
       resetQuestion({ questionText: "", minValue: NaN, maxValue: NaN });
       setQuestions([]);
-      setOpen(false);
+      setOpen();
       questionOnEdit && setQuestionOnEdit(0);
     }
 

@@ -1,17 +1,12 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { Survey } from "../types";
 import QuestionRow from "./QuestionRow";
+import { SurveyDetailsProps } from "../interfaces";
 
-const SurveyDetails = ({
+const SurveyDetails: React.FC<SurveyDetailsProps> = ({
   isOpen,
   setOpen,
   survey,
   surveyTitle,
-}: {
-  isOpen: boolean;
-  setOpen: any;
-  survey: Survey;
-  surveyTitle: string;
 }) => {
   return (
     <div

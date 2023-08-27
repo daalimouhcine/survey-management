@@ -9,19 +9,15 @@ import { Survey } from "../types";
 import { useClickOutside } from "../hooks/useClickOutside";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { SurveyActionsProps } from "../interfaces";
 
-const SurveyActions = ({
+
+const SurveyActions: React.FC<SurveyActionsProps> = ({
   survey,
   viewDetails,
   setReFetch,
   setSurveyToEdit,
   setOpenEdit,
-}: {
-  survey: Survey;
-  viewDetails: any;
-  setReFetch: any;
-  setSurveyToEdit: any;
-  setOpenEdit: any;
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => {
@@ -57,7 +53,7 @@ const SurveyActions = ({
 
   const editSurvey = (survey: Survey) => {
     setSurveyToEdit(survey);
-    setOpenEdit(true);
+    setOpenEdit();
   };
 
   return (
