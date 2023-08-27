@@ -3,13 +3,20 @@ import { Survey } from "../types";
 import CreateSurvey from "./CreateSurvey";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/20/solid";
+import { useForm } from "react-hook-form";
 
+type Search = {
+  search: string;
+};
 const SurveyTable = () => {
   const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [surveys, setSurveys] = useState<Survey[]>([]);
   const [reFetch, setReFetch] = useState(false);
   const [surveyToEdit, setSurveyToEdit] = useState<Survey | undefined>();
+  const { register, watch, reset } = useForm<Search>();
+  const [tableData, setTableData] = useState<Survey[]>(surveys || []);
 
   useEffect(() => {
     setLoading(true);
@@ -40,6 +47,25 @@ const SurveyTable = () => {
 
   const removeEditSurvey = () => {
     setSurveyToEdit(undefined);
+  };
+
+  const searchValue = watch("search");
+
+  useEffect(() => {
+    if (searchValue) {
+      const filteredSurveys = surveys.filter(
+        (survey) =>
+          survey?.surveyName &&
+          survey.surveyName.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setTableData(filteredSurveys);
+    } else {
+      setTableData(surveys);
+    }
+  }, [searchValue, surveys]);
+
+  const resetSearch = () => {
+    reset({ search: "" });
   };
 
   return (
@@ -100,8 +126,25 @@ const SurveyTable = () => {
         </div>
       </div>
       <div className='mt-8 flex flex-col'>
+        <form className='w-full flex gap-x-5 mb-3'>
+          <div className='w-2/4'>
+            <div className='mt-2 relative'>
+              <MagnifyingGlassIcon className='absolute w-5 h-5 text-gray-400 left-3 translate-y-1/2' />
+              {searchValue && (
+                <XMarkIcon onClick={() => resetSearch()} className='absolute w-5 h-5 text-gray-400 right-3 translate-y-1/2 cursor-pointer ' />
+              )}
+              <input
+                type='text'
+                {...register("search")}
+                id='search'
+                placeholder='Search by name'
+                className='px-5 pl-10 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+              />
+            </div>
+          </div>
+        </form>
         <div className='-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8'>
-        <div className='w-full p-3 '>
+          <div className='w-full p-3 '>
             <div className='overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 md:rounded-lg'>
               <table className='min-w-full divide-y divide-gray-300'>
                 <thead className='bg-gray-500'>
@@ -162,8 +205,8 @@ const SurveyTable = () => {
                         Loading...
                       </td>
                     </tr>
-                  ) : surveys?.length > 0 ? (
-                    surveys.map((survey, index) => (
+                  ) : tableData?.length > 0 ? (
+                    tableData.map((survey, index) => (
                       <SurveyRow
                         key={survey.surveyId}
                         index={index}
