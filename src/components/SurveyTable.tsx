@@ -8,6 +8,8 @@ import { useForm } from "react-hook-form";
 
 type Search = {
   search: string;
+  byActive: boolean;
+  byInactive: boolean;
 };
 const SurveyTable = () => {
   const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
@@ -50,19 +52,54 @@ const SurveyTable = () => {
   };
 
   const searchValue = watch("search");
+  const byActive = watch("byActive");
+  const byInactive = watch("byInactive");
 
   useEffect(() => {
-    if (searchValue) {
-      const filteredSurveys = surveys.filter(
-        (survey) =>
-          survey?.surveyName &&
-          survey.surveyName.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      setTableData(filteredSurveys);
+    if (searchValue || byActive || byInactive) {
+      const filteredSurveys = surveys.filter((survey) => {
+        if (searchValue && byActive && byInactive) {
+          return (
+            survey.surveyName &&
+            survey.surveyName
+              .toLowerCase()
+              .includes(searchValue.toLowerCase()) &&
+            survey.surveyActive === true
+          );
+        } else if (searchValue && byActive) {
+          return (
+            survey.surveyName &&
+            survey.surveyName
+              .toLowerCase()
+              .includes(searchValue.toLowerCase()) &&
+            survey.surveyActive === true
+          );
+        } else if (searchValue && byInactive) {
+          return (
+            survey.surveyName &&
+            survey.surveyName
+              .toLowerCase()
+              .includes(searchValue.toLowerCase()) &&
+            !survey.surveyActive
+          );
+        } else if (searchValue) {
+          return (
+            survey.surveyName &&
+            survey.surveyName.toLowerCase().includes(searchValue.toLowerCase())
+          );
+        } else if (byActive && byInactive) {
+          return survey.surveyActive === true || !survey.surveyActive;
+        } else if (byActive) {
+          return survey.surveyActive === true || survey.surveyActive;
+        } else if (byInactive) {
+          return survey.surveyActive === false || !survey.surveyActive;
+        }
+      });
+      setTableData([...filteredSurveys]);
     } else {
-      setTableData(surveys);
+      setTableData([...surveys]);
     }
-  }, [searchValue, surveys]);
+  }, [searchValue, surveys, byActive, byInactive]);
 
   const resetSearch = () => {
     reset({ search: "" });
@@ -127,11 +164,14 @@ const SurveyTable = () => {
       </div>
       <div className='mt-8 flex flex-col'>
         <form className='w-full flex gap-x-5 mb-3'>
-          <div className='w-2/4'>
+          <div className='w-1/2'>
             <div className='mt-2 relative'>
               <MagnifyingGlassIcon className='absolute w-5 h-5 text-gray-400 left-3 translate-y-1/2' />
               {searchValue && (
-                <XMarkIcon onClick={() => resetSearch()} className='absolute w-5 h-5 text-gray-400 right-3 translate-y-1/2 cursor-pointer ' />
+                <XMarkIcon
+                  onClick={() => resetSearch()}
+                  className='absolute w-5 h-5 text-gray-400 right-3 translate-y-1/2 cursor-pointer '
+                />
               )}
               <input
                 type='text'
@@ -140,6 +180,31 @@ const SurveyTable = () => {
                 placeholder='Search by name'
                 className='px-5 pl-10 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
               />
+            </div>
+          </div>
+          <div className='w-1/2 flex gap-x-8 items-center justify-center'>
+            <p className='font-semibold'>Filter by Status:</p>
+            <div className='flex items-center'>
+              <input
+                type='checkbox'
+                {...register("byActive")}
+                id='byActive'
+                className='w-5 h-5'
+              />
+              <label htmlFor='byActive' className='ml-2'>
+                Active
+              </label>
+            </div>
+            <div className='flex items-center'>
+              <input
+                type='checkbox'
+                {...register("byInactive")}
+                id='byInactive'
+                className='w-5 h-5'
+              />
+              <label htmlFor='byInactive' className='ml-2'>
+                Not Active
+              </label>
             </div>
           </div>
         </form>
