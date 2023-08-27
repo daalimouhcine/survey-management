@@ -115,7 +115,7 @@ const SurveyTable = () => {
             Start Date, End Date, Status and more.
           </p>
         </div>
-        <div className='mt-4 sm:mt-0 sm:ml-16 sm:flex-none'>
+        <div className='mt-4 sm:mt-0 sm:ml-16 sm:flex-none max-sm:ml-auto max-sm:w-fit'>
           <CreateSurvey
             isOpen={createSurveyOpen}
             setOpen={() => setCreateSurveyOpen(false)}
@@ -126,7 +126,7 @@ const SurveyTable = () => {
           <button
             onClick={() => setCreateSurveyOpen(true)}
             type='button'
-            className='relative inline-flex items-center justify-start py-3 pl-4 pr-12 overflow-hidden font-semibold text-indigo-600 transition-all duration-150 ease-in-out rounded hover:pl-10 hover:pr-6 bg-gray-100 group'>
+            className='relative inline-flex items-end justify-start py-3 pl-4 pr-12 overflow-hidden font-semibold text-indigo-600 transition-all duration-150 ease-in-out rounded hover:pl-10 hover:pr-6 bg-gray-100 group'>
             <span className='absolute bottom-0 left-0 w-full h-1 transition-all duration-150 ease-in-out bg-indigo-600 group-hover:h-full'></span>
             <span className='absolute right-0 pr-4 duration-200 ease-out group-hover:translate-x-12'>
               <svg
@@ -163,8 +163,8 @@ const SurveyTable = () => {
         </div>
       </div>
       <div className='mt-8 flex flex-col'>
-        <form className='w-full flex gap-x-5 mb-3'>
-          <div className='w-1/2'>
+        <form className='w-full flex max-md:flex-col gap-5 mb-3'>
+          <div className='w-1/2 max-md:w-2/3 max-sm:w-full'>
             <div className='mt-2 relative'>
               <MagnifyingGlassIcon className='absolute w-5 h-5 text-gray-400 left-3 translate-y-1/2' />
               {searchValue && (
@@ -182,7 +182,7 @@ const SurveyTable = () => {
               />
             </div>
           </div>
-          <div className='w-1/2 flex gap-x-8 items-center justify-center'>
+          <div className='w-1/2 max-md:w-fit flex max-md:ml-auto gap-x-8 items-center justify-center'>
             <p className='font-semibold'>Filter by Status:</p>
             <div className='flex items-center'>
               <input
