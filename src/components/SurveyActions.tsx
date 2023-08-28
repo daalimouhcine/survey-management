@@ -29,7 +29,6 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
   });
 
   const removeSurvey = (surveyId: number) => {
-    setShowLoader(true);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -40,6 +39,7 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
+        setShowLoader(true);
         axios
           .delete(
             "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys/" +
