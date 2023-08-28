@@ -24,8 +24,11 @@ const SurveyRow: React.FC<SurveyRowProps> = ({
           <SurveyDetails
             survey={survey}
             isOpen={openDetails}
+            setReFetch={setReFetch}
             setOpen={() => setOpenDetails(!openDetails)}
+            setSurveyToEdit={editSurvey}
             surveyTitle={survey.surveyName}
+            setOpenEdit={() => setOpenEdit()}
           />
         </td>
       </tr>
@@ -85,9 +88,11 @@ const SurveyRow: React.FC<SurveyRowProps> = ({
           <SurveyActions
             survey={survey}
             viewDetails={() => setOpenDetails(true)}
+            displayDetails={true}
             setReFetch={setReFetch}
             setSurveyToEdit={editSurvey}
             setOpenEdit={() => setOpenEdit()}
+            index={index}
           />
         </td>
       </tr>

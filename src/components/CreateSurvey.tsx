@@ -10,7 +10,7 @@ import { PencilIcon, TrashIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { CreateSurveyProps } from "../interfaces";
-
+import Loader from "./Loader";
 
 const CreateSurvey: React.FC<CreateSurveyProps> = ({
   isOpen,
@@ -19,6 +19,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
   surveyToEdit,
   removeEditSurvey,
 }) => {
+  const [showLoader, setShowLoader] = useState<boolean>(false);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [questionOnEdit, setQuestionOnEdit] = useState<number>(0);
 
@@ -57,6 +58,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
   }, [isOpen]);
 
   const onSubmitSurvey = (data: createSurveyForm) => {
+    setShowLoader(true);
     if (surveyToEdit) {
       const editedSurvey: Survey = {
         surveyId: surveyToEdit.surveyId,
@@ -79,6 +81,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
         )
         .then((res) => {
           setReFetch();
+          setShowLoader(false);
           if (res.data.statusCode == 200) {
             const responseMessage = JSON.parse(res.data.body);
             Swal.fire({
@@ -117,6 +120,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
         )
         .then((res) => {
           setReFetch();
+          setShowLoader(false);
           if (res.data.statusCode == 200) {
             const responseMessage = JSON.parse(res.data.body);
             Swal.fire({
@@ -300,7 +304,6 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       }
     }
   };
-
   const validateMinMax = (data: number, type: string) => {
     if (type === "minValue") {
       if (Number(data) > Number(watchQuestion("maxValue").valueOf())) {
@@ -334,6 +337,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       className={`h-[90vh] sm:h-[85vh] w-screen sm:w-[90vw] flex flex-col gap-y-3 px-5 py-8 sm:p-10 rounded-t-3xl bg-gray-400 fixed z-30 ${
         !isOpen ? "-bottom-full" : "-bottom-0"
       } transition-all ease-out duration-500 left-1/2 -translate-x-1/2 overflow-y-scroll hide-scroll-bar`}>
+      <Loader display={showLoader} />
       <div className='bg-white h-3 w-28 rounded-full absolute top-2 left-1/2 -translate-x-1/2'></div>
       <form onSubmit={handleSubmitSurvey(onSubmitSurvey)}>
         <div className='w-full flex justify-between items-center'>

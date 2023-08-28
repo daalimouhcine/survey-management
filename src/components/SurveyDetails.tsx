@@ -1,13 +1,23 @@
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import QuestionRow from "./QuestionRow";
 import { SurveyDetailsProps } from "../interfaces";
+import SurveyActions from "./SurveyActions";
+import { Survey } from "../types";
 
 const SurveyDetails: React.FC<SurveyDetailsProps> = ({
   isOpen,
   setOpen,
+  setReFetch,
+  setSurveyToEdit,
   survey,
   surveyTitle,
+  setOpenEdit,
 }) => {
+  const editSurvey = (survey: Survey) => {
+    setSurveyToEdit(survey);
+  };
+
+
   return (
     <div
       className={`h-[90vh] sm:h-[85vh] w-screen sm:w-[90vw] flex flex-col gap-y-3 px-5 py-8 sm:p-10 rounded-t-3xl bg-gray-400 fixed z-30 ${
@@ -18,11 +28,23 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
         <h3 className='font-bold text-xl lg:text-3xl text-gray-900'>
           Survey Details: {surveyTitle}
         </h3>
-        <button
-          onClick={() => setOpen()}
-          className='p-1 lg:p-2 bg-white rounded-lg grid place-items-center shadow-md hover:shadow-2xl transition'>
-          <XMarkIcon className='h-5 w-5 lg:h-6 lg:w-6 text-gray-900' />
-        </button>
+        <div className='flex gap-x-2 items-center'>
+          <SurveyActions
+            survey={survey}
+            displayDetails={false}
+            setReFetch={setReFetch}
+            setSurveyToEdit={editSurvey}
+            setOpenEdit={() => {
+              setOpen();
+              setOpenEdit();
+            }}
+          />
+          <button
+            onClick={() => setOpen()}
+            className='p-1 lg:p-2 bg-white rounded-lg grid place-items-center shadow-md hover:shadow-2xl transition'>
+            <XMarkIcon className='h-5 w-5 lg:h-6 lg:w-6 text-gray-900' />
+          </button>
+        </div>
       </div>
       <div className='w-full h-fit flex flex-col gap-y-8 bg-gray-50 rounded-lg p-5 mt-5'>
         <div className='flex gap-x-8'>
@@ -112,7 +134,10 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
                     ))
                   ) : (
                     <tr>
-                      <td align="center" colSpan={4} className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
+                      <td
+                        align='center'
+                        colSpan={4}
+                        className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
                         No questions added yet
                       </td>
                     </tr>

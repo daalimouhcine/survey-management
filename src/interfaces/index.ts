@@ -10,10 +10,12 @@ export interface CreateSurveyProps {
 
 export interface SurveyActionsProps {
   survey: Survey;
-  viewDetails: () => void;
+  viewDetails?: () => void;
+  displayDetails: boolean;
   setReFetch: () => void;
   setSurveyToEdit: (survey: Survey) => void;
   setOpenEdit: () => void;
+  index?: number;
 }
 
 export interface SurveyRowProps {
@@ -25,9 +27,11 @@ export interface SurveyRowProps {
 }
 
 export interface SurveyDetailsProps {
-    isOpen: boolean;
-    setOpen: () => void;
-    survey: Survey;
-    surveyTitle: string;
-  
+  isOpen: boolean;
+  setOpen: () => void;
+  setReFetch: () => void;
+  survey: Survey;
+  setSurveyToEdit: (survey: Survey) => void;
+  surveyTitle: string;
+  setOpenEdit: () => void;
 }
