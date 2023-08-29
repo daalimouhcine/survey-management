@@ -15,8 +15,10 @@ const SurveyTable = () => {
   const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [surveyNames, setSurveyNames] = useState<string[]>([]);
   const [reFetch, setReFetch] = useState(false);
   const [surveyToEdit, setSurveyToEdit] = useState<Survey | undefined>();
+  const [surveyToClone, setSurveyToClone] = useState<Survey | undefined>();
   const { register, watch, reset } = useForm<Search>();
   const [tableData, setTableData] = useState<Survey[]>(surveys || []);
 
@@ -35,6 +37,11 @@ const SurveyTable = () => {
               return content;
             });
           setSurveys([...surveysWithoutContent]);
+
+          const surveyNamesGetter = surveysWithoutContent.map(
+            (survey) => survey.surveyName
+          );
+          setSurveyNames(surveyNamesGetter);
           setLoading(false);
         });
     };
@@ -42,13 +49,17 @@ const SurveyTable = () => {
   }, [reFetch]);
 
   useEffect(() => {
+    if (surveyToClone) {
+      setCreateSurveyOpen(true);
+    }
     if (surveyToEdit) {
       setCreateSurveyOpen(true);
     }
-  }, [surveyToEdit]);
+  }, [surveyToEdit, surveyToClone]);
 
   const removeEditSurvey = () => {
     setSurveyToEdit(undefined);
+    setSurveyToClone(undefined);
   };
 
   const searchValue = watch("search");
@@ -117,11 +128,13 @@ const SurveyTable = () => {
         </div>
         <div className='mt-4 sm:mt-0 sm:ml-16 sm:flex-none max-sm:ml-auto max-sm:w-fit'>
           <CreateSurvey
+            surveyNames={surveyNames}
             isOpen={createSurveyOpen}
             setOpen={() => setCreateSurveyOpen(false)}
             setReFetch={() => setReFetch(!reFetch)}
             surveyToEdit={surveyToEdit}
-            removeEditSurvey={removeEditSurvey}
+            surveyToClone={surveyToClone}
+            removeDefaultSurvey={removeEditSurvey}
           />
           <button
             onClick={() => setCreateSurveyOpen(true)}
@@ -278,6 +291,7 @@ const SurveyTable = () => {
                         survey={survey}
                         setReFetch={() => setReFetch(!reFetch)}
                         setSurveyToEdit={setSurveyToEdit}
+                        setSurveyToClone={setSurveyToClone}
                         setOpenEdit={() => setCreateSurveyOpen(true)}
                       />
                     ))

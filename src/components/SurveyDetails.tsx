@@ -9,6 +9,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
   setOpen,
   setReFetch,
   setSurveyToEdit,
+  setSurveyToClone,
   survey,
   surveyTitle,
   setOpenEdit,
@@ -16,6 +17,10 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
   const editSurvey = (survey: Survey) => {
     setSurveyToEdit(survey);
   };
+
+  const cloneSurvey = (survey: Survey) => {
+    setSurveyToClone(survey);
+  }
 
 
   return (
@@ -34,6 +39,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
             displayDetails={false}
             setReFetch={setReFetch}
             setSurveyToEdit={editSurvey}
+            setSurveyToClone={cloneSurvey}
             setOpenEdit={() => {
               setOpen();
               setOpenEdit();
