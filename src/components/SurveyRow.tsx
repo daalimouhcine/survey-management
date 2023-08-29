@@ -9,6 +9,7 @@ const SurveyRow: React.FC<SurveyRowProps> = ({
   index,
   setReFetch,
   setSurveyToEdit,
+  setSurveyToClone,
   setOpenEdit,
 }) => {
   const [openDetails, setOpenDetails] = useState(false);
@@ -16,6 +17,10 @@ const SurveyRow: React.FC<SurveyRowProps> = ({
   const editSurvey = (survey: Survey) => {
     setSurveyToEdit(survey);
   };
+  const cloneSurvey = (survey: Survey) => {
+    setSurveyToClone(survey);
+  }
+
 
   return (
     <>
@@ -24,8 +29,12 @@ const SurveyRow: React.FC<SurveyRowProps> = ({
           <SurveyDetails
             survey={survey}
             isOpen={openDetails}
+            setReFetch={setReFetch}
             setOpen={() => setOpenDetails(!openDetails)}
+            setSurveyToEdit={editSurvey}
+            setSurveyToClone={cloneSurvey}
             surveyTitle={survey.surveyName}
+            setOpenEdit={() => setOpenEdit()}
           />
         </td>
       </tr>
@@ -46,12 +55,12 @@ const SurveyRow: React.FC<SurveyRowProps> = ({
         <td
           onClick={() => setOpenDetails(true)}
           className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-          {new Date(survey.startDate).toLocaleString()}
+          {new Date(survey.startDate).toDateString()}
         </td>
         <td
           onClick={() => setOpenDetails(true)}
           className='whitespace-nowrap px-3 py-4 text-sm text-gray-500'>
-          {new Date(survey.endDate).toLocaleString()}
+          {new Date(survey.endDate).toDateString()}
         </td>
         <td
           onClick={() => setOpenDetails(true)}
@@ -85,9 +94,12 @@ const SurveyRow: React.FC<SurveyRowProps> = ({
           <SurveyActions
             survey={survey}
             viewDetails={() => setOpenDetails(true)}
+            displayDetails={true}
             setReFetch={setReFetch}
             setSurveyToEdit={editSurvey}
+            setSurveyToClone={cloneSurvey}
             setOpenEdit={() => setOpenEdit()}
+            index={index}
           />
         </td>
       </tr>

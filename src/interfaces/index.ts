@@ -1,19 +1,24 @@
 import { Survey } from "../types";
 
 export interface CreateSurveyProps {
+  surveyNames: string[];
   isOpen: boolean;
   setOpen: () => void;
   setReFetch: () => void;
-  surveyToEdit?: Survey; // Assuming Survey is the type for surveyToEdit
-  removeEditSurvey: () => void;
+  surveyToEdit?: Survey; 
+  surveyToClone?: Survey; 
+  removeDefaultSurvey: () => void;
 }
 
 export interface SurveyActionsProps {
   survey: Survey;
-  viewDetails: () => void;
+  viewDetails?: () => void;
+  displayDetails: boolean;
   setReFetch: () => void;
   setSurveyToEdit: (survey: Survey) => void;
+  setSurveyToClone: (survey: Survey) => void;
   setOpenEdit: () => void;
+  index?: number;
 }
 
 export interface SurveyRowProps {
@@ -21,13 +26,17 @@ export interface SurveyRowProps {
   index: number;
   setReFetch: () => void;
   setSurveyToEdit: (survey: Survey) => void;
+  setSurveyToClone: (survey: Survey) => void;
   setOpenEdit: () => void;
 }
 
 export interface SurveyDetailsProps {
-    isOpen: boolean;
-    setOpen: () => void;
-    survey: Survey;
-    surveyTitle: string;
-  
+  isOpen: boolean;
+  setOpen: () => void;
+  setReFetch: () => void;
+  survey: Survey;
+  setSurveyToEdit: (survey: Survey) => void;
+  setSurveyToClone: (survey: Survey) => void;
+  surveyTitle: string;
+  setOpenEdit: () => void;
 }

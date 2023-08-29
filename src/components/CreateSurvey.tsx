@@ -12,11 +12,13 @@ import axios from "axios";
 import { CreateSurveyProps } from "../interfaces";
 
 const CreateSurvey: React.FC<CreateSurveyProps> = ({
+  surveyNames,
   isOpen,
   setOpen,
   setReFetch,
   surveyToEdit,
-  removeEditSurvey,
+  surveyToClone,
+  removeDefaultSurvey,
 }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [questionOnEdit, setQuestionOnEdit] = useState<number>(0);
@@ -39,19 +41,27 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
     clearErrors: clearErrorsQuestion,
     formState: { errors: errorsQuestion },
   } = useForm<createQuestionForm>();
+
   useEffect(() => {
-    setQuestions(surveyToEdit?.questions || []);
+    setQuestions(surveyToEdit?.questions || surveyToClone?.questions || []);
     resetSurvey({
       surveyName: surveyToEdit?.surveyName || "",
       startDate: surveyToEdit?.startDate
-        ? new Date(surveyToEdit.startDate).toISOString().replace("Z", "")
+        ? new Date(surveyToEdit.startDate).toISOString().substr(0, 10)
+        : surveyToClone?.startDate
+        ? new Date(surveyToClone.startDate).toISOString().substr(0, 10)
         : "",
       endDate: surveyToEdit?.endDate
-        ? new Date(surveyToEdit.endDate).toISOString().replace("Z", "")
+        ? new Date(surveyToEdit.endDate).toISOString().substr(0, 10)
+        : surveyToClone?.endDate
+        ? new Date(surveyToClone.endDate).toISOString().substr(0, 10)
         : "",
-      introPrompt: surveyToEdit?.introPrompt || "",
-      outroPrompt: surveyToEdit?.outroPrompt || "",
-      description: surveyToEdit?.description || "",
+      introPrompt:
+        surveyToEdit?.introPrompt || surveyToClone?.introPrompt || "",
+      outroPrompt:
+        surveyToEdit?.outroPrompt || surveyToClone?.outroPrompt || "",
+      description:
+        surveyToEdit?.description || surveyToClone?.description || "",
     });
   }, [isOpen]);
 
@@ -139,8 +149,6 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
     cancel(false);
   };
   const onSubmitQuestion = (data: createQuestionForm) => {
-    console.log(surveyToEdit);
-
     if (data.questionNumber) {
       const newQuestion: Question = {
         questionNumber: data.questionNumber,
@@ -267,11 +275,18 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       questionOnEdit && setQuestionOnEdit(0);
     }
 
-    if (surveyToEdit) {
-      removeEditSurvey();
+    if (surveyToEdit || surveyToClone) {
+      removeDefaultSurvey();
     }
   };
 
+  const validateName = (name: string) => {
+    if (surveyNames.includes(name)) {
+      return "the name is already exists";
+    } else {
+      clearErrorsSurvey("surveyName");
+    }
+  };
   const validateDate = (date: string, type: string) => {
     if (type === "startDate") {
       if (new Date(date) < new Date()) {
@@ -299,7 +314,6 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       }
     }
   };
-
   const validateMinMax = (data: number, type: string) => {
     if (type === "minValue") {
       if (Number(data) > Number(watchQuestion("maxValue").valueOf())) {
@@ -311,7 +325,6 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       } else {
         clearErrorsQuestion("minValue");
         clearErrorsQuestion("maxValue");
-        console.log("min hello");
       }
     } else {
       if (Number(data) < Number(watchQuestion("minValue"))) {
@@ -323,7 +336,6 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       } else {
         clearErrorsQuestion("minValue");
         clearErrorsQuestion("maxValue");
-        console.log("max hello", data, watchQuestion("minValue"));
       }
     }
   };
@@ -387,7 +399,11 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                   placeholder=' '
                   type='text'
                   id='surveyName'
-                  {...registerSurvey("surveyName", { required: true })}
+                  {...registerSurvey("surveyName", {
+                    required: true,
+                    validate: (value) =>
+                      validateName(value),
+                  })}
                 />
                 <label
                   htmlFor='surveyName'
@@ -396,7 +412,9 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                 </label>
                 {errorsSurvey.surveyName && (
                   <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
-                    This field is required
+                    {errorsSurvey.surveyName.type === "required"
+                        ? "This field is required"
+                        : errorsSurvey.surveyName.message}
                   </p>
                 )}
               </div>
@@ -413,7 +431,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                         : "placeholder-shown:border-gray-200"
                     } focus:border-green-500 focus:outline-0 disabled:border-0`}
                     placeholder=' '
-                    type='datetime-local'
+                    type='date'
                     id='startDate'
                     {...registerSurvey("startDate", {
                       valueAsDate: true,
@@ -447,7 +465,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                         : "placeholder-shown:border-gray-200"
                     } focus:border-green-500 focus:outline-0 disabled:border-0`}
                     placeholder=' '
-                    type='datetime-local'
+                    type='date'
                     id='endDate'
                     {...registerSurvey("endDate", {
                       valueAsDate: true,
