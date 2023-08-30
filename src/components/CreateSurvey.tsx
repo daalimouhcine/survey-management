@@ -701,7 +701,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                         key={question.questionNumber}
                         className={`${
                           questionOnEdit === question.questionNumber &&
-                          "bg-green-300"
+                          "border-4 border-gray-700"
                         }`}>
                         <td className='px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
                           {question.questionNumber}
@@ -723,18 +723,33 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                             className='text-red-600 hover:text-red-900'>
                             <TrashIcon className='w-5 h-5' />
                           </button>
+                          {/* {questionOnEdit === question.questionNumber && (
+                            <button
+                              onClick={() => {
+                                questionOnEdit
+                                  ? cancelEdit()
+                                  : editQuestion(question.questionNumber);
+                              }}
+                              className={`${
+                                questionOnEdit
+                                  ? "text-gray-600 hover:text-gray-900"
+                                  : "text-green-600 hover:text-green-900"
+                              }`}>
+                              <XMarkIcon className='w-5 h-5 bg-gray-200/70 rounded-md' />
+                            </button>
+                          )} */}
                           <button
                             onClick={() => {
-                              questionOnEdit
+                              questionOnEdit === question.questionNumber
                                 ? cancelEdit()
                                 : editQuestion(question.questionNumber);
                             }}
                             className={`${
-                              questionOnEdit
+                              questionOnEdit === question.questionNumber
                                 ? "text-gray-600 hover:text-gray-900"
                                 : "text-green-600 hover:text-green-900"
                             }`}>
-                            {questionOnEdit ? (
+                            {questionOnEdit === question.questionNumber ? (
                               <XMarkIcon className='w-5 h-5 bg-gray-200/70 rounded-md' />
                             ) : (
                               <PencilIcon className='w-5 h-5' />
