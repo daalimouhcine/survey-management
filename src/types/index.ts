@@ -1,4 +1,3 @@
-// type for the question object
 export type Question = {
   questionNumber: number;
   maxValue: number;
@@ -6,7 +5,6 @@ export type Question = {
   questionText: string;
 };
 
-// type for the survey object
 export type Survey = {
   surveyId?: number;
   surveyName: string;
@@ -34,4 +32,10 @@ export type createQuestionForm = {
   questionText: string;
   minValue: number;
   maxValue: number;
+};
+
+export type Search = {
+  search: string;
+  byActive: boolean;
+  byInactive: boolean;
 };
