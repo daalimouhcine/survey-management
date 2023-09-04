@@ -176,7 +176,7 @@ const SurveyTable = () => {
         </div>
       </div>
       <div className='mt-8 flex flex-col'>
-        <form className='w-full flex max-md:flex-col gap-5 mb-3'>
+        <div className='w-full flex max-md:flex-col gap-5 mb-3'>
           <div className='w-1/2 max-md:w-2/3 max-sm:w-full'>
             <div className='mt-2 relative'>
               <MagnifyingGlassIcon className='absolute w-5 h-5 text-gray-400 left-3 translate-y-1/2' />
@@ -220,7 +220,7 @@ const SurveyTable = () => {
               </label>
             </div>
           </div>
-        </form>
+        </div>
         <div className='-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8'>
           <div className='w-full p-3 '>
             <div className='overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 md:rounded-lg'>
