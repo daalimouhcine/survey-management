@@ -1,16 +1,12 @@
 import SurveyRow from "./SurveyRow";
-import { Survey } from "../types";
+import { Search, Survey } from "../types";
 import CreateSurvey from "./CreateSurvey";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useForm } from "react-hook-form";
 
-type Search = {
-  search: string;
-  byActive: boolean;
-  byInactive: boolean;
-};
+
 const SurveyTable = () => {
   const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
   const [loading, setLoading] = useState(false);

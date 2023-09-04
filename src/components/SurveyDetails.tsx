@@ -78,7 +78,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
                 Start Date
               </h4>
               <p className='text-sm lg:text-base text-gray-500'>
-                {new Date(survey.startDate).toLocaleString()}
+                {new Date(survey.startDate).toDateString()}
               </p>
             </div>
             <div className='w-1/2'>
@@ -86,7 +86,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
                 End Date
               </h4>
               <p className='text-sm lg:text-base text-gray-500'>
-                {new Date(survey.endDate).toLocaleString()}
+                {new Date(survey.endDate).toDateString()}
               </p>
             </div>
           </div>
