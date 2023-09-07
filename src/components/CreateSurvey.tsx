@@ -281,7 +281,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
   };
 
   const validateName = (name: string) => {
-    if (surveyNames.includes(name)) {
+    if (surveyNames.includes(name) && !surveyToEdit) {
       return "the name is already exists";
     } else {
       clearErrorsSurvey("surveyName");
