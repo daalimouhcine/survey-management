@@ -289,7 +289,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
   };
   const validateDate = (date: string, type: string) => {
     if (type === "startDate") {
-      if (new Date(date) < new Date()) {
+      if (new Date(date) < new Date() && new Date(date).getDate() !== new Date().getDate()) {
         return "Start Date cannot be before the current date and time";
       } else if (new Date(date) > new Date(watchSurvey("endDate"))) {
         setErrorSurvey("endDate", {
