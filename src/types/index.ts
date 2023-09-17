@@ -25,6 +25,7 @@ export type createSurveyForm = {
   introPrompt: string;
   outroPrompt: string;
   description: string;
+  surveyActive: boolean;
 };
 
 export type createQuestionForm = {
