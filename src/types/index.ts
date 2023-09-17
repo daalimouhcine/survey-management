@@ -37,5 +37,5 @@ export type createQuestionForm = {
 export type Search = {
   search: string;
   byActive: boolean;
-  byInactive: boolean;
+  byInActive: boolean;
 };

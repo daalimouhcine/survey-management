@@ -11,7 +11,7 @@ export interface CreateSurveyProps {
 }
 
 export interface SurveyActionsProps {
-  survey: Survey;
+  survey: Survey | undefined;
   viewDetails?: () => void;
   displayDetails: boolean;
   setReFetch: () => void;
@@ -34,9 +34,8 @@ export interface SurveyDetailsProps {
   isOpen: boolean;
   setOpen: () => void;
   setReFetch: () => void;
-  survey: Survey;
+  survey: Survey | undefined;
   setSurveyToEdit: (survey: Survey) => void;
   setSurveyToClone: (survey: Survey) => void;
-  surveyTitle: string;
   setOpenEdit: () => void;
 }
