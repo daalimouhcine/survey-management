@@ -1,11 +1,17 @@
-import SurveyRow from "./SurveyRow";
 import { Search, Survey } from "../types";
 import CreateSurvey from "./CreateSurvey";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import { useForm } from "react-hook-form";
+import SurveyActions from "./SurveyActions";
 
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/primereact.min.css";
+import Swal from "sweetalert2";
+import SurveyDetails from "./SurveyDetails";
 
 const SurveyTable = () => {
   const [createSurveyOpen, setCreateSurveyOpen] = useState(false);
@@ -60,12 +66,12 @@ const SurveyTable = () => {
 
   const searchValue = watch("search");
   const byActive = watch("byActive");
-  const byInactive = watch("byInactive");
+  const byInActive = watch("byInActive");
 
   useEffect(() => {
-    if (searchValue || byActive || byInactive) {
+    if (searchValue || byActive || byInActive) {
       const filteredSurveys = surveys.filter((survey) => {
-        if (searchValue && byActive && byInactive) {
+        if (searchValue && byActive && byInActive) {
           return (
             survey.surveyName &&
             survey.surveyName
@@ -81,7 +87,7 @@ const SurveyTable = () => {
               .includes(searchValue.toLowerCase()) &&
             survey.surveyActive === true
           );
-        } else if (searchValue && byInactive) {
+        } else if (searchValue && byInActive) {
           return (
             survey.surveyName &&
             survey.surveyName
@@ -94,11 +100,11 @@ const SurveyTable = () => {
             survey.surveyName &&
             survey.surveyName.toLowerCase().includes(searchValue.toLowerCase())
           );
-        } else if (byActive && byInactive) {
+        } else if (byActive && byInActive) {
           return survey.surveyActive === true || !survey.surveyActive;
         } else if (byActive) {
           return survey.surveyActive === true || survey.surveyActive;
-        } else if (byInactive) {
+        } else if (byInActive) {
           return survey.surveyActive === false || !survey.surveyActive;
         }
       });
@@ -106,32 +112,172 @@ const SurveyTable = () => {
     } else {
       setTableData([...surveys]);
     }
-  }, [searchValue, surveys, byActive, byInactive]);
+  }, [searchValue, surveys, byActive, byInActive]);
 
   const resetSearch = () => {
     reset({ search: "" });
   };
 
+  const editSurvey = (survey: Survey) => {
+    setSurveyToEdit(survey);
+  };
+  const cloneSurvey = (survey: Survey) => {
+    setSurveyToClone(survey);
+  };
+
+  const [openDetails, setOpenDetails] = useState(false);
+  const [surveyDetails, setSurveyDetails] = useState<Survey | undefined>();
+
+  const statusBodyTemplate = (survey: Survey) => {
+    const status = survey.surveyActive;
+    return (
+      <span
+        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+          status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+        }`}>
+        {status ? "Active" : "Inactive"}
+      </span>
+    );
+  };
+
+  const [selectedSurveys, setSelectedSurveys] = useState<Survey[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  const onSelectionChange = (e: any) => {
+    const value = e.value;
+    setSelectedSurveys(value);
+    setSelectAll(value.length === tableData.length);
+  };
+  const onSelectAllChange = (e: any) => {
+    const selectAll = e.checked;
+
+    if (selectAll) {
+      setSelectedSurveys(tableData);
+      setSelectAll(true);
+    } else {
+      setSelectAll(false);
+      setSelectedSurveys([]);
+    }
+  };
+
+  const deleteAll = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "red",
+      cancelButtonColor: "green",
+      confirmButtonText: "Yes, delete all!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        selectedSurveys.forEach((survey) => {
+          axios
+            .delete(
+              `https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys/${survey.surveyId}`
+            )
+            .then(() => {
+              setSelectedSurveys([]);
+              setReFetch(!reFetch);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+        Swal.fire(
+          "Deleted!",
+          "The selected surveys has been deleted.",
+          "success"
+        );
+      }
+    });
+  };
+
   return (
-    <div className='px-4 sm:px-6 lg:px-8 mt-10'>
+    <div className='px-4 sm:px-6 lg:px-8 mt-20'>
       <div className='sm:flex sm:items-center'>
-        <div className='sm:flex-auto'>
-          <h1 className='text-xl font-semibold text-gray-900'>Surveys</h1>
-          <p className='mt-2 text-sm text-gray-700'>
-            A list of all the surveys including with this details: Id, Name,
-            Start Date, End Date, Status and more.
-          </p>
+        <div className='sm:flex-auto relative'>
+          <div
+            className={`flex items-center justify-between gap-x-5 px-5 py-3 max-sm:px-3 max-sm:py-1.5 bg-indigo-500/70 rounded-md absolute bottom-0 max-sm:bottom-3 transition-all ease-linear duration-300 ${
+              selectedSurveys.length ? "left-0" : "-left-full"
+            }`}>
+            <p className='text-white font-semibold'>
+              {selectedSurveys.length} Survey{selectedSurveys.length > 1 && "s"}{" "}
+              Selected
+            </p>
+            <button
+              onClick={() => deleteAll()}
+              className='rounded-md px-3.5 py-1.5 m-1 overflow-hidden relative group cursor-pointer border-2 font-medium border-white hover:border-red-600 transition-colors duration-150 ease-linear shadow-red-600/60 shadow-md  text-white'>
+              <span className='absolute w-64 h-0 transition-all duration-300 origin-center rotate-45 -translate-x-20 bg-red-600 top-1/2 group-hover:h-64 group-hover:-translate-y-32 ease'></span>
+              <span className='relative text-white transition duration-300 group-hover:text-white ease'>
+                Delete All
+              </span>
+            </button>
+          </div>
         </div>
-        <div className='mt-4 sm:mt-0 sm:ml-16 sm:flex-none max-sm:ml-auto max-sm:w-fit'>
-          <CreateSurvey
-            surveyNames={surveyNames}
-            isOpen={createSurveyOpen}
-            setOpen={() => setCreateSurveyOpen(false)}
-            setReFetch={() => setReFetch(!reFetch)}
-            surveyToEdit={surveyToEdit}
-            surveyToClone={surveyToClone}
-            removeDefaultSurvey={removeEditSurvey}
+      </div>
+
+      <SurveyDetails
+        survey={surveyDetails}
+        isOpen={openDetails}
+        setReFetch={() => setReFetch(!reFetch)}
+        setOpen={() => setOpenDetails(!openDetails)}
+        setSurveyToEdit={editSurvey}
+        setSurveyToClone={cloneSurvey}
+        setOpenEdit={() => setCreateSurveyOpen(true)}
+      />
+      <CreateSurvey
+        surveyNames={surveyNames}
+        isOpen={createSurveyOpen}
+        setOpen={() => setCreateSurveyOpen(false)}
+        setReFetch={() => setReFetch(!reFetch)}
+        surveyToEdit={surveyToEdit}
+        surveyToClone={surveyToClone}
+        removeDefaultSurvey={removeEditSurvey}
+      />
+      <div className='w-full flex flex-wrap-reverse justify-between gap-5 mb-5'>
+        <div className='w-2/3 sm:w-1/3 mt-2 relative'>
+          <MagnifyingGlassIcon className='absolute w-5 h-5 text-gray-400 left-3 translate-y-1/2' />
+          {searchValue && (
+            <XMarkIcon
+              onClick={() => resetSearch()}
+              className='absolute w-5 h-5 text-gray-400 right-3 translate-y-1/2 cursor-pointer '
+            />
+          )}
+          <input
+            type='text'
+            {...register("search")}
+            id='search'
+            placeholder='Search by name'
+            className='px-5 pl-10 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6'
           />
+        </div>
+        <div className='max-w-1/3 max-md:w-fit flex max-md:ml-auto gap-x-8 max-sm:gap-x-5 items-center justify-center'>
+          <p className='font-semibold'>Filter by Status:</p>
+          <div className='flex items-center'>
+            <input
+              type='checkbox'
+              {...register("byActive")}
+              id='byActive'
+              className='w-5 h-5'
+            />
+            <label htmlFor='byActive' className='ml-2 max-sm:ml-1'>
+              Active
+            </label>
+          </div>
+          <div className='flex items-center'>
+            <input
+              type='checkbox'
+              {...register("byInActive")}
+              id='byInActive'
+              className='w-5 h-5'
+            />
+            <label htmlFor='byInActive' className='ml-2 max-sm:ml-1'>
+              Inactive
+            </label>
+          </div>
+        </div>
+        <div className='max-w-1/3'>
           <button
             onClick={() => setCreateSurveyOpen(true)}
             type='button'
@@ -171,141 +317,99 @@ const SurveyTable = () => {
           </button>
         </div>
       </div>
-      <div className='mt-8 flex flex-col'>
-        <div className='w-full flex max-md:flex-col gap-5 mb-3'>
-          <div className='w-1/2 max-md:w-2/3 max-sm:w-full'>
-            <div className='mt-2 relative'>
-              <MagnifyingGlassIcon className='absolute w-5 h-5 text-gray-400 left-3 translate-y-1/2' />
-              {searchValue && (
-                <XMarkIcon
-                  onClick={() => resetSearch()}
-                  className='absolute w-5 h-5 text-gray-400 right-3 translate-y-1/2 cursor-pointer '
-                />
-              )}
-              <input
-                type='text'
-                {...register("search")}
-                id='search'
-                placeholder='Search by name'
-                className='px-5 pl-10 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
+      <DataTable
+        value={tableData}
+        key='surveyId'
+        stripedRows
+        paginator
+        rows={5}
+        rowsPerPageOptions={[5, 10, 25, 50]}
+        tableStyle={{}}
+        loading={loading}
+        emptyMessage='No Surveys Found'
+        scrollHeight='500px'
+        selection={selectedSurveys}
+        onSelectionChange={onSelectionChange}
+        selectAll={selectAll}
+        onSelectAllChange={onSelectAllChange}
+        cellSelection={false}
+        selectionMode='multiple'>
+        <Column selectionMode='multiple' headerStyle={{ width: "3rem" }} />
+        <Column
+          field='surveyName'
+          header='Survey Name'
+          sortable
+          style={{ maxWidth: "200px" }}
+          className='truncate text-sm'></Column>
+        <Column
+          field='description'
+          header='Description'
+          sortable
+          style={{ maxWidth: "200px" }}
+          className='truncate text-sm'></Column>
+        <Column
+          field='introPrompt'
+          header='Intro Prompt'
+          sortable
+          style={{ maxWidth: "250px" }}
+          className='truncate text-sm'></Column>
+        <Column
+          field='outroPrompt'
+          header='Outro Prompt'
+          sortable
+          style={{ maxWidth: "250px" }}
+          className='truncate text-sm'></Column>
+        <Column
+          field='startDate'
+          header='Start_Date'
+          body={(rowData: Survey) => {
+            return <p>{new Date(rowData.startDate).toDateString()}</p>;
+          }}
+          sortable
+          style={{ minWidth: "104px" }}
+          className='text-sm w-fit'></Column>
+        <Column
+          field='endDate'
+          header='End_Date'
+          body={(rowData: Survey) => {
+            return <p>{new Date(rowData.endDate).toDateString()}</p>;
+          }}
+          className='text-sm'
+          style={{ minWidth: "104px" }}></Column>
+        <Column
+          field='questions.length'
+          header='Questions Number'
+          sortable
+          style={{ minWidth: "104px" }}
+          className='text-sm'></Column>
+        <Column
+          field='Status'
+          header='Status'
+          dataType='boolean'
+          body={statusBodyTemplate}
+          style={{}}></Column>
+        <Column
+          field='Actions'
+          header='Actions'
+          body={(rowData: Survey) => {
+            return (
+              <SurveyActions
+                survey={rowData}
+                viewDetails={() => {
+                  setSurveyDetails(rowData);
+                  setOpenDetails(true);
+                }}
+                displayDetails={true}
+                setReFetch={() => setReFetch(!reFetch)}
+                setSurveyToEdit={editSurvey}
+                setSurveyToClone={cloneSurvey}
+                setOpenEdit={() => setCreateSurveyOpen(true)}
+                index={0}
               />
-            </div>
-          </div>
-          <div className='w-1/2 max-md:w-fit flex max-md:ml-auto gap-x-8 items-center justify-center'>
-            <p className='font-semibold'>Filter by Status:</p>
-            <div className='flex items-center'>
-              <input
-                type='checkbox'
-                {...register("byActive")}
-                id='byActive'
-                className='w-5 h-5'
-              />
-              <label htmlFor='byActive' className='ml-2'>
-                Active
-              </label>
-            </div>
-            <div className='flex items-center'>
-              <input
-                type='checkbox'
-                {...register("byInactive")}
-                id='byInactive'
-                className='w-5 h-5'
-              />
-              <label htmlFor='byInactive' className='ml-2'>
-                Not Active
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className='-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8'>
-          <div className='w-full p-3 '>
-            <div className='overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 md:rounded-lg'>
-              <table className='min-w-full divide-y divide-gray-300'>
-                <thead className='bg-gray-500'>
-                  <tr>
-                    <th
-                      scope='col'
-                      className='py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-100 sm:pl-6'>
-                      Id
-                    </th>
-                    <th
-                      scope='col'
-                      className='py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-100 sm:pl-6'>
-                      Name
-                    </th>
-                    <th
-                      scope='col'
-                      className='px-3 py-3.5 text-left text-sm font-semibold text-gray-100'>
-                      Start Date
-                    </th>
-                    <th
-                      scope='col'
-                      className='px-3 py-3.5 text-left text-sm font-semibold text-gray-100'>
-                      End Date
-                    </th>
-                    <th
-                      scope='col'
-                      className='px-3 py-3.5 text-left text-sm font-semibold text-gray-100'>
-                      Intro Prompt
-                    </th>
-                    <th
-                      scope='col'
-                      className='px-3 py-3.5 text-left text-sm font-semibold text-gray-100'>
-                      Outro Prompt
-                    </th>
-                    <th
-                      scope='col'
-                      className='px-3 py-3.5 text-left text-sm font-semibold text-gray-100'>
-                      Questions Count
-                    </th>
-                    <th
-                      scope='col'
-                      className='px-3 py-3.5 text-left text-sm font-semibold text-gray-100'>
-                      Status
-                    </th>
-                    <th
-                      scope='col'
-                      className='relative py-3.5 pl-3 pr-4 sm:pr-6'>
-                      <span className='sr-only'>Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className='bg-white'>
-                  {loading ? (
-                    <tr>
-                      <td
-                        colSpan={9}
-                        className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center'>
-                        Loading...
-                      </td>
-                    </tr>
-                  ) : tableData?.length > 0 ? (
-                    tableData.map((survey, index) => (
-                      <SurveyRow
-                        key={survey.surveyId}
-                        index={index}
-                        survey={survey}
-                        setReFetch={() => setReFetch(!reFetch)}
-                        setSurveyToEdit={setSurveyToEdit}
-                        setSurveyToClone={setSurveyToClone}
-                        setOpenEdit={() => setCreateSurveyOpen(true)}
-                      />
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={9}
-                        className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-center'>
-                        No Surveys Found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
+            );
+          }}
+          style={{ textAlign: "center" }}></Column>
+      </DataTable>
     </div>
   );
 };

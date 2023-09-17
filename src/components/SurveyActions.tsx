@@ -67,47 +67,6 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
     setOpenEdit();
   }
 
-  // const duplicate = (survey: Survey) => {
-  //   setShowLoader(true);
-  //   const clonedSurvey: Survey = {
-  //     surveyName: survey.surveyName,
-  //     surveyActive: survey.surveyActive,
-  //     startDate: survey.startDate,
-  //     endDate: survey.endDate,
-  //     introPrompt: survey.introPrompt,
-  //     outroPrompt: survey.outroPrompt,
-  //     CreatedBy: "Mouhcine Daali",
-  //     description: survey.description,
-  //     questions: [...survey.questions],
-  //   };
-  //   axios
-  //     .post(
-  //       "https://at2l22ryjg.execute-api.eu-west-2.amazonaws.com/dev/surveys",
-  //       clonedSurvey
-  //     )
-  //     .then((res) => {
-  //       setReFetch();
-  //       setShowLoader(false);
-  //       if (res.data.statusCode == 200) {
-  //         const responseMessage = JSON.parse(res.data.body);
-  //         Swal.fire({
-  //           position: "center",
-  //           icon: "success",
-  //           title: responseMessage.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //       } else {
-  //         Swal.fire({
-  //           position: "center",
-  //           icon: "error",
-  //           title: "Something Went Wrong",
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //       }
-  //     });
-  // };
 
   return (
     <div ref={open ? ref : undefined} className='relative'>
@@ -139,7 +98,7 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
         <button
           onClick={() => {
             setOpen(false);
-            editSurvey(survey);
+            editSurvey(survey!);
           }}
           className='w-full flex items-center justify-center px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
           <span>Edit</span>
@@ -148,7 +107,7 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
         <button
           onClick={() => {
             setOpen(false);
-            cloneSurvey(survey);
+            cloneSurvey(survey!);
           }}
           className='w-full flex items-center justify-center px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
           <span>Duplicate</span>
@@ -157,7 +116,7 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
         <button
           onClick={() => {
             setOpen(false);
-            removeSurvey(survey.surveyId!);
+            removeSurvey(survey!.surveyId!);
           }}
           className='w-full flex items-center justify-center px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
           <span>Delete</span>

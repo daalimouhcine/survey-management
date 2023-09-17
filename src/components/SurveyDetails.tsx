@@ -11,7 +11,6 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
   setSurveyToEdit,
   setSurveyToClone,
   survey,
-  surveyTitle,
   setOpenEdit,
 }) => {
   const editSurvey = (survey: Survey) => {
@@ -31,7 +30,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
       <div className='bg-white h-3 w-28 rounded-full absolute top-2 left-1/2 -translate-x-1/2'></div>
       <div className='w-full flex justify-between items-center'>
         <h3 className='font-bold text-xl lg:text-3xl text-gray-900'>
-          Survey Details: {surveyTitle}
+          Survey Details: {survey?.surveyName}
         </h3>
         <div className='flex gap-x-2 items-center'>
           <SurveyActions
@@ -59,7 +58,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
               Intro Prompt
             </h4>
             <p className='text-sm lg:text-base text-gray-500'>
-              {survey.introPrompt}
+              {survey?.introPrompt}
             </p>
           </div>
           <div className='w-1/2'>
@@ -67,7 +66,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
               Outro Prompt
             </h4>
             <p className='text-sm lg:text-base text-gray-500'>
-              {survey.outroPrompt}
+              {survey?.outroPrompt}
             </p>
           </div>
         </div>
@@ -78,7 +77,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
                 Start Date
               </h4>
               <p className='text-sm lg:text-base text-gray-500'>
-                {new Date(survey.startDate).toDateString()}
+                {new Date(survey ? survey.startDate : "").toDateString()}
               </p>
             </div>
             <div className='w-1/2'>
@@ -86,7 +85,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
                 End Date
               </h4>
               <p className='text-sm lg:text-base text-gray-500'>
-                {new Date(survey.endDate).toDateString()}
+                {new Date(survey ? survey.endDate : "").toDateString()}
               </p>
             </div>
           </div>
@@ -95,7 +94,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
               Description
             </h4>
             <p className='text-sm lg:text-base text-gray-500'>
-              {survey.description}
+              {survey?.description}
             </p>
           </div>
         </div>
@@ -130,7 +129,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
                   </tr>
                 </thead>
                 <tbody className='bg-white'>
-                  {survey.questions?.length > 0 ? (
+                  {survey && survey.questions?.length > 0 ? (
                     survey.questions.map((question, index) => (
                       <QuestionRow
                         key={question.questionNumber}
