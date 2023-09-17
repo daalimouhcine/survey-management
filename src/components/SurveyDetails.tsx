@@ -72,7 +72,7 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
         </div>
         <div className='flex gap-x-5'>
           <div className='w-1/2 flex gap-x-5'>
-            <div className='w-1/2'>
+            <div className='w-1/3'>
               <h4 className='text-lg lg:text-xl font-semibold text-gray-900'>
                 Start Date
               </h4>
@@ -80,12 +80,20 @@ const SurveyDetails: React.FC<SurveyDetailsProps> = ({
                 {new Date(survey ? survey.startDate : "").toDateString()}
               </p>
             </div>
-            <div className='w-1/2'>
+            <div className='w-1/3'>
               <h4 className='text-lg lg:text-xl font-semibold text-gray-900'>
                 End Date
               </h4>
               <p className='text-sm lg:text-base text-gray-500'>
                 {new Date(survey ? survey.endDate : "").toDateString()}
+              </p>
+            </div>
+            <div className='w-1/3'>
+              <h4 className='text-lg lg:text-xl font-semibold text-gray-900'>
+                Survey Status
+              </h4>
+              <p className='text-sm lg:text-base text-gray-500'>
+                {survey?.surveyActive ? "Active" : "Inactive"}
               </p>
             </div>
           </div>
