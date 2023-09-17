@@ -23,9 +23,15 @@ const SurveyTable = () => {
   const [surveyToClone, setSurveyToClone] = useState<Survey | undefined>();
   const { register, watch, reset } = useForm<Search>();
   const [tableData, setTableData] = useState<Survey[]>(surveys || []);
+  const [openDetails, setOpenDetails] = useState(false);
+  const [surveyDetails, setSurveyDetails] = useState<Survey | undefined>();
+  const [selectedSurveys, setSelectedSurveys] = useState<Survey[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     setLoading(true);
+    setSelectAll(false);
+    setSelectedSurveys([]);
     const getSurveys = async () => {
       await axios
         .get(
@@ -125,9 +131,6 @@ const SurveyTable = () => {
     setSurveyToClone(survey);
   };
 
-  const [openDetails, setOpenDetails] = useState(false);
-  const [surveyDetails, setSurveyDetails] = useState<Survey | undefined>();
-
   const statusBodyTemplate = (survey: Survey) => {
     const status = survey.surveyActive;
     return (
@@ -139,9 +142,6 @@ const SurveyTable = () => {
       </span>
     );
   };
-
-  const [selectedSurveys, setSelectedSurveys] = useState<Survey[]>([]);
-  const [selectAll, setSelectAll] = useState(false);
 
   const onSelectionChange = (e: any) => {
     const value = e.value;
@@ -371,6 +371,7 @@ const SurveyTable = () => {
         <Column
           field='endDate'
           header='End_Date'
+          sortable
           body={(rowData: Survey) => {
             return <p>{new Date(rowData.endDate).toDateString()}</p>;
           }}
@@ -380,7 +381,7 @@ const SurveyTable = () => {
           field='questions.length'
           header='Questions Number'
           sortable
-          style={{ minWidth: "104px" }}
+          style={{ minWidth: "104px", textAlign: "center" }}
           className='text-sm'></Column>
         <Column
           field='Status'
