@@ -62,6 +62,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
         surveyToEdit?.outroPrompt || surveyToClone?.outroPrompt || "",
       description:
         surveyToEdit?.description || surveyToClone?.description || "",
+        surveyActive: surveyToEdit?.surveyActive || surveyToClone?.surveyActive || false,
     });
   }, [isOpen]);
 
@@ -70,13 +71,13 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       const editedSurvey: Survey = {
         surveyId: surveyToEdit.surveyId,
         surveyName: data.surveyName,
-        surveyActive: surveyToEdit.surveyActive,
         startDate: data.startDate,
         endDate: data.endDate,
         introPrompt: data.introPrompt,
         outroPrompt: data.outroPrompt,
         CreatedBy: surveyToEdit.CreatedBy,
         description: data.description,
+        surveyActive: data.surveyActive,
         questions: [...questions],
       };
 
@@ -117,6 +118,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
         outroPrompt: data.outroPrompt,
         CreatedBy: "Mouhcine Daali",
         description: data.description,
+
         questions: [...questions],
       };
       axios
@@ -289,7 +291,10 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
   };
   const validateDate = (date: string, type: string) => {
     if (type === "startDate") {
-      if (new Date(date) < new Date() && new Date(date).getDate() !== new Date().getDate()) {
+      if (
+        new Date(date) < new Date() &&
+        new Date(date).getDate() !== new Date().getDate()
+      ) {
         return "Start Date cannot be before the current date and time";
       } else if (new Date(date) > new Date(watchSurvey("endDate"))) {
         setErrorSurvey("endDate", {
@@ -385,40 +390,71 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           </p>
           <div className='flex flex-col gap-y-8'>
             <div className='flex max-md:flex-col gap-x-5'>
-              <div className='w-2/4 max-md:w-full relative mt-1'>
-                <input
-                  className={`peer h-full w-full border-b ${
-                    errorsSurvey.surveyName
-                      ? "border-red-200"
-                      : "border-gray-200"
-                  } bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all ${
-                    errorsSurvey.surveyName
-                      ? "placeholder-shown:border-red-200"
-                      : "placeholder-shown:border-gray-200"
-                  } focus:border-green-500 focus:outline-0 disabled:border-0`}
-                  placeholder=' '
-                  type='text'
-                  id='surveyName'
-                  {...registerSurvey("surveyName", {
-                    required: true,
-                    validate: (value) =>
-                      validateName(value),
-                  })}
-                />
-                <label
-                  htmlFor='surveyName'
-                  className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
-                  Survey Name
-                </label>
-                {errorsSurvey.surveyName && (
-                  <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
-                    {errorsSurvey.surveyName.type === "required"
+              <div className='w-5/5 md:w-3/5 flex gap-x-5'>
+                <div className='w-3/4 max-md:w-full relative mt-2'>
+                  <input
+                    className={`peer h-full w-full border-b ${
+                      errorsSurvey.surveyName
+                        ? "border-red-200"
+                        : "border-gray-200"
+                    } bg-transparent pt-4 pb-4 font-sans text-sm font-normal text-gray-700 outline outline-0 transition-all ${
+                      errorsSurvey.surveyName
+                        ? "placeholder-shown:border-red-200"
+                        : "placeholder-shown:border-gray-200"
+                    } focus:border-green-500 focus:outline-0 disabled:border-0`}
+                    placeholder=' '
+                    type='text'
+                    id='surveyName'
+                    {...registerSurvey("surveyName", {
+                      required: true,
+                      validate: (value) => validateName(value),
+                    })}
+                  />
+                  <label
+                    htmlFor='surveyName'
+                    className="after:content[' '] pointer-events-none absolute left-0 -top-2.5 pb-14 flex h-full w-full select-none text-[14px] font-normal leading-tight text-gray-800 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-green-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-lg peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-gray-800 peer-focus:text-[14px] peer-focus:leading-tight peer-focus:text-green-500 peer-focus:after:scale-x-100 peer-focus:after:border-green-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-gray-800">
+                    Survey Name
+                  </label>
+                  {errorsSurvey.surveyName && (
+                    <p className='absolute bottom-0 translate-y-full left-0 text-xs text-red-500'>
+                      {errorsSurvey.surveyName.type === "required"
                         ? "This field is required"
                         : errorsSurvey.surveyName.message}
-                  </p>
-                )}
+                    </p>
+                  )}
+                </div>
+                <div className='w-1/4'>
+                  <label className='flex flex-col gap-y-1 cursor-pointer select-none items-center'>
+                    <i className='text-gray-800 text-sm font-medium'>
+                      Is Active
+                    </i>
+                    <div className='relative'>
+                      <input
+                        type='checkbox'
+                        id='surveyActive'
+                        {...registerSurvey("surveyActive")}
+                        className='sr-only'
+                      />
+                      <div className='h-5 w-14 rounded-full bg-[#E5E7EB] shadow-inner'></div>
+                      <div
+                        className={`shadow-md absolute -top-1 flex h-7 w-7 items-center justify-center rounded-full transition-all ease-linear duration-200 ${
+                          watchSurvey("surveyActive")
+                            ? "!bg-white left-1/2"
+                            : "bg-white left-0"
+                        }`}>
+                        <span
+                          className={`active h-4 w-4 rounded-full  ${
+                            watchSurvey("surveyActive")
+                              ? "bg-blue-500"
+                              : "bg-[#E5E7EB]"
+                          }`}></span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
               </div>
-              <div className='flex max-md:mt-10 gap-x-5 w-2/4 max-md:w-full'>
+
+              <div className='w-2/5 flex max-md:mt-10 gap-x-5  max-md:w-full'>
                 <div className='w-1/2 relative'>
                   <input
                     className={`peer h-full w-full border-b ${
