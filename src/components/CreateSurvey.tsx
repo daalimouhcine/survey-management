@@ -261,14 +261,14 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           setQuestions([]);
           setOpen();
           questionOnEdit && setQuestionOnEdit(0);
+          if (surveyToEdit || surveyToClone) {
+            removeDefaultSurvey();
+          }
           Swal.fire(
             "Canceled!",
             "Your operation has been canceled.",
             "success"
           );
-          if (surveyToEdit || surveyToClone) {
-            removeDefaultSurvey();
-          }
         }
       });
     } else {
