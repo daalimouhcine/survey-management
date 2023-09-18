@@ -272,7 +272,7 @@ const SurveyTable = () => {
             </label>
           </div>
         </div>
-        <div className='max-w-1/3'>
+        <div className='max-w-1/3 max-md:ml-auto'>
           <button
             onClick={() => setCreateSurveyOpen(true)}
             type='button'
