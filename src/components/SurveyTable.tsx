@@ -78,33 +78,28 @@ const SurveyTable = () => {
     if (searchValue || byActive || byInActive) {
       const filteredSurveys = surveys.filter((survey) => {
         if (searchValue && byActive && byInActive) {
-          return (
-            survey.surveyName &&
-            survey.surveyName
+          return Object.keys(survey).some((key) =>
+            survey[key as keyof Survey]!.toString()
               .toLowerCase()
-              .includes(searchValue.toLowerCase()) &&
-            survey.surveyActive === true
+              .includes(searchValue.toLowerCase())
           );
         } else if (searchValue && byActive) {
-          return (
-            survey.surveyName &&
-            survey.surveyName
+          return Object.keys(survey).some((key) =>
+            survey[key as keyof Survey]!.toString()
               .toLowerCase()
-              .includes(searchValue.toLowerCase()) &&
-            survey.surveyActive === true
+              .includes(searchValue.toLowerCase())
           );
         } else if (searchValue && byInActive) {
-          return (
-            survey.surveyName &&
-            survey.surveyName
+          return Object.keys(survey).some((key) =>
+            survey[key as keyof Survey]!.toString()
               .toLowerCase()
-              .includes(searchValue.toLowerCase()) &&
-            !survey.surveyActive
+              .includes(searchValue.toLowerCase())
           );
         } else if (searchValue) {
-          return (
-            survey.surveyName &&
-            survey.surveyName.toLowerCase().includes(searchValue.toLowerCase())
+          return Object.keys(survey).some((key) =>
+            survey[key as keyof Survey]!.toString()
+              .toLowerCase()
+              .includes(searchValue.toLowerCase())
           );
         } else if (byActive && byInActive) {
           return survey.surveyActive === true || !survey.surveyActive;
@@ -248,7 +243,7 @@ const SurveyTable = () => {
             type='text'
             {...register("search")}
             id='search'
-            placeholder='Search by name'
+            placeholder='Keyword Search'
             className='px-5 pl-10 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:leading-6'
           />
         </div>
