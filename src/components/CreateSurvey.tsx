@@ -62,7 +62,8 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
         surveyToEdit?.outroPrompt || surveyToClone?.outroPrompt || "",
       description:
         surveyToEdit?.description || surveyToClone?.description || "",
-        surveyActive: surveyToEdit?.surveyActive || surveyToClone?.surveyActive || false,
+      surveyActive:
+        surveyToEdit?.surveyActive || surveyToClone?.surveyActive || false,
     });
   }, [isOpen]);
 
@@ -212,11 +213,16 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       confirmButtonText: "Yes, Remove it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        setQuestions(
-          questions.filter(
-            (question) => question.questionNumber !== questionNumber
-          )
+        // remove question from questions array and update the state with the new array of questions with the removed question and the same order and update the question numbers
+        const newQuestions = questions.filter(
+          (question) => question.questionNumber !== questionNumber
         );
+        setQuestions(
+          newQuestions.map((question, index) => {
+            return { ...question, questionNumber: index + 1 };
+          })
+        );
+        console.log(questions);
         Swal.fire("Removed!", "Your question has been removed.", "success");
       }
     });
@@ -260,6 +266,9 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
             "Your operation has been canceled.",
             "success"
           );
+          if (surveyToEdit || surveyToClone) {
+            removeDefaultSurvey();
+          }
         }
       });
     } else {
@@ -275,10 +284,6 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       setQuestions([]);
       setOpen();
       questionOnEdit && setQuestionOnEdit(0);
-    }
-
-    if (surveyToEdit || surveyToClone) {
-      removeDefaultSurvey();
     }
   };
 
