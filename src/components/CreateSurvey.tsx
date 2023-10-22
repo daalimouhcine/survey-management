@@ -350,6 +350,26 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
     }
   };
 
+  const validateActive = () => {
+    if (
+      surveyToEdit &&
+      new Date(watchSurvey("endDate")).toString() < new Date().toString()
+    ) {
+      Swal.fire("You can't activate this content", "The End Date has passed");
+      // set surveyActive to false
+      resetSurvey({ surveyActive: false });
+      return;
+    }
+
+    if (watchSurvey("surveyActive")) {
+      Swal.fire(
+        "Only one content can be active at a time",
+        "If you activate this content, the other active content will be deactivated"
+      );
+      return;
+    }
+  };
+
   return (
     <div
       className={`h-[90vh] sm:h-[85vh] w-screen sm:w-[90vw] flex flex-col gap-y-3 px-5 py-8 sm:p-10 rounded-t-3xl bg-gray-400 fixed z-30 ${
@@ -437,7 +457,11 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                       <input
                         type='checkbox'
                         id='surveyActive'
-                        {...registerSurvey("surveyActive")}
+                        {...registerSurvey("surveyActive", {
+                          onChange: () => {
+                            validateActive();
+                          },
+                        })}
                         className='sr-only'
                       />
                       <div className='h-5 w-14 rounded-full bg-[#E5E7EB] shadow-inner'></div>
