@@ -5,8 +5,8 @@ export interface CreateSurveyProps {
   isOpen: boolean;
   setOpen: () => void;
   setReFetch: () => void;
-  surveyToEdit?: Survey; 
-  surveyToClone?: Survey; 
+  surveyToEdit?: Survey;
+  surveyToClone?: Survey;
   removeDefaultSurvey: () => void;
 }
 
@@ -18,7 +18,6 @@ export interface SurveyActionsProps {
   setSurveyToEdit: (survey: Survey) => void;
   setSurveyToClone: (survey: Survey) => void;
   setOpenEdit: () => void;
-  index?: number;
 }
 
 export interface SurveyRowProps {

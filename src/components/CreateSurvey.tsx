@@ -93,6 +93,14 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           if (res.data.statusCode == 200) {
             const responseMessage = JSON.parse(res.data.body);
             Swal.fire({
+              showClass: {
+                popup: "swal2-noanimation",
+                backdrop: "swal2-noanimation",
+                icon: "swal2-noanimation",
+              },
+              hideClass: {
+                popup: "",
+              },
               position: "center",
               icon: "success",
               title: responseMessage.message,
@@ -101,6 +109,14 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
             });
           } else {
             Swal.fire({
+              showClass: {
+                popup: "swal2-noanimation",
+                backdrop: "swal2-noanimation",
+                icon: "swal2-noanimation",
+              },
+              hideClass: {
+                popup: "",
+              },
               position: "center",
               icon: "error",
               title: "Something Went Wrong",
@@ -132,6 +148,14 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           if (res.data.statusCode == 200) {
             const responseMessage = JSON.parse(res.data.body);
             Swal.fire({
+              showClass: {
+                popup: "swal2-noanimation",
+                backdrop: "swal2-noanimation",
+                icon: "swal2-noanimation",
+              },
+              hideClass: {
+                popup: "",
+              },
               position: "center",
               icon: "success",
               title: responseMessage.message,
@@ -140,6 +164,14 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
             });
           } else {
             Swal.fire({
+              showClass: {
+                popup: "swal2-noanimation",
+                backdrop: "swal2-noanimation",
+                icon: "swal2-noanimation",
+              },
+              hideClass: {
+                popup: "",
+              },
               position: "center",
               icon: "error",
               title: "Something Went Wrong",
@@ -204,6 +236,14 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
   };
   const removeQuestion = (questionNumber: number) => {
     Swal.fire({
+      showClass: {
+        popup: "swal2-noanimation",
+        backdrop: "swal2-noanimation",
+        icon: "swal2-noanimation",
+      },
+      hideClass: {
+        popup: "",
+      },
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -223,7 +263,19 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           })
         );
         console.log(questions);
-        Swal.fire("Removed!", "Your question has been removed.", "success");
+        Swal.fire({
+          showClass: {
+            popup: "swal2-noanimation",
+            backdrop: "swal2-noanimation",
+            icon: "swal2-noanimation",
+          },
+          hideClass: {
+            popup: "",
+          },
+          title: "Removed!",
+          text: "Your question has been removed.",
+          icon: "success",
+        });
       }
     });
   };
@@ -240,6 +292,14 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
         watchSurvey("description"))
     ) {
       Swal.fire({
+        showClass: {
+          popup: "swal2-noanimation",
+          backdrop: "swal2-noanimation",
+          icon: "swal2-noanimation",
+        },
+        hideClass: {
+          popup: "",
+        },
         title: "Are you sure?",
         text: "You won't be able to revert this!",
         icon: "warning",
@@ -264,11 +324,19 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           if (surveyToEdit || surveyToClone) {
             removeDefaultSurvey();
           }
-          Swal.fire(
-            "Canceled!",
-            "Your operation has been canceled.",
-            "success"
-          );
+          Swal.fire({
+            showClass: {
+              popup: "swal2-noanimation",
+              backdrop: "swal2-noanimation",
+              icon: "swal2-noanimation",
+            },
+            hideClass: {
+              popup: "",
+            },
+            title: "Canceled!",
+            text: "Your operation has been canceled.",
+            icon: "success",
+          });
         }
       });
     } else {
@@ -355,27 +423,46 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
       surveyToEdit &&
       new Date(watchSurvey("endDate")).toString() < new Date().toString()
     ) {
-      Swal.fire("You can't activate this content", "The End Date has passed");
+      Swal.fire({
+        showClass: {
+          popup: "swal2-noanimation",
+          backdrop: "swal2-noanimation",
+          icon: "swal2-noanimation",
+        },
+        hideClass: {
+          popup: "",
+        },
+        title: "You can't activate this content",
+        text: "The End Date has passed",
+      });
       // set surveyActive to false
       resetSurvey({ surveyActive: false });
       return;
     }
 
     if (watchSurvey("surveyActive")) {
-      Swal.fire(
-        "Only one content can be active at a time",
-        "If you activate this content, the other active content will be deactivated"
-      );
+      Swal.fire({
+        showClass: {
+          popup: "swal2-noanimation",
+          backdrop: "swal2-noanimation",
+          icon: "swal2-noanimation",
+        },
+        hideClass: {
+          popup: "",
+        },
+        title: "Only one content can be active at a time",
+        text: "If you activate this content, the other active content will be deactivated",
+      });
       return;
     }
   };
 
   return (
     <div
-      className={`h-[90vh] sm:h-[85vh] w-screen sm:w-[90vw] flex flex-col gap-y-3 px-5 py-8 sm:p-10 rounded-t-3xl bg-gray-400 fixed z-30 ${
-        !isOpen ? "-bottom-full" : "-bottom-0"
-      } transition-all ease-out duration-500 left-1/2 -translate-x-1/2 overflow-y-scroll hide-scroll-bar`}>
-      <div className='bg-white h-3 w-28 rounded-full absolute top-2 left-1/2 -translate-x-1/2'></div>
+      className={`max-h-[90vh] h-fit w-screen sm:w-[90vw] flex flex-col gap-y-3 px-5 py-8 sm:p-10 rounded-sm bg-gray-400 fixed z-30 ${
+        !isOpen ? "-top-full" : "top-1/2"
+      } left-1/2 transition-all ease-out duration-100 -translate-x-1/2 -translate-y-1/2 overflow-y-scroll hide-scroll-bar`}>
+      <div className='bg-white h-3 w-28  absolute top-2 left-1/2 -translate-x-1/2'></div>
       <form onSubmit={handleSubmitSurvey(onSubmitSurvey)}>
         <div className='w-full flex justify-between items-center'>
           <h3 className='font-bold text-xl lg:text-3xl text-gray-900'>
@@ -384,32 +471,18 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           <div className='flex gap-x-2'>
             <button
               type='submit'
-              className='relative px-5 py-2.5 overflow-hidden font-medium text-green-500 bg-gray-100 border border-gray-100 rounded-lg shadow-inner group'>
-              <span className='absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-green-400 group-hover:w-full ease'></span>
-              <span className='absolute bottom-0 right-0 w-0 h-0 transition-all duration-200 border-b-2 border-green-400 group-hover:w-full ease'></span>
-              <span className='absolute top-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-green-400 group-hover:h-full ease'></span>
-              <span className='absolute bottom-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-green-400 group-hover:h-full ease'></span>
-              <span className='absolute inset-0 w-full h-full duration-300 delay-300 bg-green-500 opacity-0 group-hover:opacity-100'></span>
-              <span className='relative transition-colors duration-300 delay-200 group-hover:text-white ease'>
-                {surveyToEdit ? "Save" : "Create"}
-              </span>
+              className='relative px-5 py-2.5 overflow-hidden font-medium text-green-500 bg-gray-100 border-2 border-gray-100 hover:border-green-500  shadow-inner group'>
+              {surveyToEdit ? "Save" : "Create"}
             </button>
             <button
               type='button'
               onClick={() => cancel(true)}
-              className='relative px-5 py-2.5 overflow-hidden font-medium text-red-500 bg-gray-100 border border-gray-100 rounded-lg shadow-inner group'>
-              <span className='absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-red-400 group-hover:w-full ease'></span>
-              <span className='absolute bottom-0 right-0 w-0 h-0 transition-all duration-200 border-b-2 border-red-400 group-hover:w-full ease'></span>
-              <span className='absolute top-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-red-400 group-hover:h-full ease'></span>
-              <span className='absolute bottom-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-red-400 group-hover:h-full ease'></span>
-              <span className='absolute inset-0 w-full h-full duration-300 delay-300 bg-red-500 opacity-0 group-hover:opacity-100'></span>
-              <span className='relative transition-colors duration-300 delay-200 group-hover:text-white ease'>
-                Cancel
-              </span>
+              className='relative px-5 py-2.5 overflow-hidden font-medium text-red-500 bg-gray-100 border-2 border-gray-100 hover:border-red-500  shadow-inner group'>
+              Cancel
             </button>
           </div>
         </div>
-        <div className='w-full h-fit flex flex-col gap-y-3 bg-gray-50 rounded-lg p-5 pb-8 mt-5'>
+        <div className='w-full h-fit flex flex-col gap-y-3 bg-gray-50  p-5 pb-8 mt-5'>
           <p className='text-gray-800 text-sm font-medium'>
             1. Start with setting up your survey information
           </p>
@@ -464,15 +537,15 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                         })}
                         className='sr-only'
                       />
-                      <div className='h-5 w-14 rounded-full bg-[#E5E7EB] shadow-inner'></div>
+                      <div className='h-5 w-14  bg-[#E5E7EB] shadow-inner'></div>
                       <div
-                        className={`shadow-md absolute -top-1 flex h-7 w-7 items-center justify-center rounded-full transition-all ease-linear duration-200 ${
+                        className={`shadow-md absolute -top-1 flex h-7 w-7 items-center justify-center  transition-all ease-linear duration-200 ${
                           watchSurvey("surveyActive")
                             ? "!bg-white left-1/2"
                             : "bg-white left-0"
                         }`}>
                         <span
-                          className={`active h-4 w-4 rounded-full  ${
+                          className={`active h-4 w-4   ${
                             watchSurvey("surveyActive")
                               ? "bg-blue-500"
                               : "bg-[#E5E7EB]"
@@ -639,7 +712,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           </div>
         </div>
       </form>
-      <div className='mt-8 flex flex-col p-1 bg-gray-100 rounded-lg'>
+      <div className='mt-8 flex flex-col p-1 bg-gray-100 '>
         <div className='flex justify-between items-center px-5 pt-3'>
           <p className='text-gray-800 text-sm font-medium'>2. Add Questions</p>
         </div>
@@ -719,16 +792,13 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
           </div>
           <button
             type='submit'
-            className='self-end relative inline-flex items-center justify-start px-5 py-2.5 mt-5 overflow-hidden font-medium transition-all bg-white rounded hover:bg-white group'>
-            <span className='w-48 h-48 rounded rotate-[-40deg] bg-green-600 absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-9 ml-9 group-hover:ml-0 group-hover:mb-32 group-hover:translate-x-0'></span>
-            <span className='relative w-full text-left text-black transition-colors duration-300 ease-in-out group-hover:text-white'>
-              {questionOnEdit ? "Edit Question" : "Add Question"}
-            </span>
+            className='self-end relative inline-flex items-center justify-start px-5 py-2.5 mt-5 overflow-hidden font-medium transition-all bg-white  hover:bg-gray-100 border-2 border-gray-800 group'>
+            {questionOnEdit ? "Edit Question" : "Add Question"}
           </button>
         </form>
         <div className='w-full'>
           <div className='w-full p-3 '>
-            <div className='overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 md:rounded-lg'>
+            <div className='overflow-x-scroll shadow ring-1 ring-black ring-opacity-5 md:'>
               <table className='min-w-full divide-y divide-gray-300'>
                 <thead className='bg-gray-50'>
                   <tr>
@@ -788,21 +858,6 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                             className='text-red-600 hover:text-red-900'>
                             <TrashIcon className='w-5 h-5' />
                           </button>
-                          {/* {questionOnEdit === question.questionNumber && (
-                            <button
-                              onClick={() => {
-                                questionOnEdit
-                                  ? cancelEdit()
-                                  : editQuestion(question.questionNumber);
-                              }}
-                              className={`${
-                                questionOnEdit
-                                  ? "text-gray-600 hover:text-gray-900"
-                                  : "text-green-600 hover:text-green-900"
-                              }`}>
-                              <XMarkIcon className='w-5 h-5 bg-gray-200/70 rounded-md' />
-                            </button>
-                          )} */}
                           <button
                             onClick={() => {
                               questionOnEdit === question.questionNumber
@@ -815,7 +870,7 @@ const CreateSurvey: React.FC<CreateSurveyProps> = ({
                                 : "text-green-600 hover:text-green-900"
                             }`}>
                             {questionOnEdit === question.questionNumber ? (
-                              <XMarkIcon className='w-5 h-5 bg-gray-200/70 rounded-md' />
+                              <XMarkIcon className='w-5 h-5 bg-gray-200/70 ' />
                             ) : (
                               <PencilIcon className='w-5 h-5' />
                             )}

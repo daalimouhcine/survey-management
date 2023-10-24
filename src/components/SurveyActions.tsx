@@ -1,13 +1,11 @@
 import { useState } from "react";
 import {
   DocumentDuplicateIcon,
-  EllipsisVerticalIcon,
   EyeIcon,
   PencilSquareIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
 import { Survey } from "../types";
-import { useClickOutside } from "../hooks/useClickOutside";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { SurveyActionsProps } from "../interfaces";
@@ -21,16 +19,19 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
   setSurveyToEdit,
   setSurveyToClone,
   setOpenEdit,
-  index,
 }) => {
   const [showLoader, setShowLoader] = useState<boolean>(false);
-  const [open, setOpen] = useState(false);
-  const ref = useClickOutside(() => {
-    setOpen(false);
-  });
 
   const removeSurvey = (surveyId: number) => {
     Swal.fire({
+      showClass: {
+        popup: "swal2-noanimation",
+        backdrop: "swal2-noanimation",
+        icon: "swal2-noanimation",
+      },
+      hideClass: {
+        popup: "",
+      },
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -50,7 +51,19 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
             if (res.data.statusCode == 200) {
               setShowLoader(false);
               const responseMessage = JSON.parse(res.data.body);
-              Swal.fire("Deleted!", responseMessage.message, "success");
+              Swal.fire({
+                showClass: {
+                  popup: "swal2-noanimation",
+                  backdrop: "swal2-noanimation",
+                  icon: "swal2-noanimation",
+                },
+                hideClass: {
+                  popup: "",
+                },
+                title: "Deleted!",
+                text: responseMessage.message,
+                icon: "success",
+              });
               setReFetch();
             }
           });
@@ -65,62 +78,41 @@ const SurveyActions: React.FC<SurveyActionsProps> = ({
   const cloneSurvey = (survey: Survey) => {
     setSurveyToClone(survey);
     setOpenEdit();
-  }
-
+  };
 
   return (
-    <div ref={open ? ref : undefined} className='relative'>
+    <div className='relative Actions w-fit mx-auto'>
       <Loader display={showLoader} />
-      <button
-        onClick={() => setOpen(!open)}
-        className='p-1 bg-gray-300 rounded-md hover:bg-gray-200 transition-colors ease-linear duration-200'>
-        <EllipsisVerticalIcon className='w-5 h-5 text-gray-800' />
-      </button>
-      <div
-        className={`w-fit flex flex-col absolute right-0 -translate-x-1/3 top-0 ${
-          index! === 0 || !displayDetails
-            ? "-translate-y-2/3"
-            : "-translate-y-full"
-        } mt-8 bg-white rounded-md overflow-hidden shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none ${
-          open ? "" : "hidden"
-        }`}>
+      <div className={`w-fit flex gap-x-1 Actions`}>
         {displayDetails && (
           <button
             onClick={() => {
-              setOpen(false);
               viewDetails && viewDetails();
             }}
-            className='w-full flex items-center justify-center px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
-            <span>Details</span>
-            <EyeIcon className='w-4 h-4 ml-2 inline-block text-green-400' />
+            className='w-full flex items-center justify-center px-1 py-1 text-xs text-gray-700 bg-white hover:bg-gray-100 hover:text-gray-900'>
+            <EyeIcon className='w-4 h-4 inline-block text-green-400' />
           </button>
         )}
         <button
           onClick={() => {
-            setOpen(false);
             editSurvey(survey!);
           }}
-          className='w-full flex items-center justify-center px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
-          <span>Edit</span>
-          <PencilSquareIcon className='w-4 h-4 ml-2 inline-block text-blue-400' />
+          className='w-full flex items-center justify-center px-1 py-1 text-xs text-gray-700 bg-white hover:bg-gray-100 hover:text-gray-900'>
+          <PencilSquareIcon className='w-4 h-4 inline-block text-blue-400' />
         </button>
         <button
           onClick={() => {
-            setOpen(false);
             cloneSurvey(survey!);
           }}
-          className='w-full flex items-center justify-center px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
-          <span>Duplicate</span>
-          <DocumentDuplicateIcon className='w-4 h-4 ml-2 inline-block text-yellow-400' />
+          className='w-full flex items-center justify-center px-1 py-1 text-xs text-gray-700 bg-white hover:bg-gray-100 hover:text-gray-900'>
+          <DocumentDuplicateIcon className='w-4 h-4 inline-block text-yellow-400' />
         </button>
         <button
           onClick={() => {
-            setOpen(false);
             removeSurvey(survey!.surveyId!);
           }}
-          className='w-full flex items-center justify-center px-3 py-2 text-xs text-gray-700 hover:bg-gray-100 hover:text-gray-900'>
-          <span>Delete</span>
-          <TrashIcon className='w-4 h-4 ml-2 inline-block text-red-400' />
+          className='w-full flex items-center justify-center px-1 py-1 text-xs text-gray-700 bg-white hover:bg-gray-100 hover:text-gray-900'>
+          <TrashIcon className='w-4 h-4 inline-block text-red-400' />
         </button>
       </div>
     </div>
